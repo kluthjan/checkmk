@@ -1,452 +1,993 @@
-﻿<!DOCTYPE html>
-<html lang="de">
+<!DOCTYPE html>
+<html lang="de" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nutzwertanalyse â€“ IT-Monitoring</title>
+  <title>IT-Monitoring Nutzwertanalyse & Projektabschluss – Müller & Partner GmbH</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    .slide { display: none; }
-    .slide.active { display: flex; }
-    .bar-fill { transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
-    .score-card { transition: transform 0.2s, box-shadow 0.2s; }
-    .score-card:hover { transform: translateY(-4px); }
-    .winner-glow { box-shadow: 0 0 0 3px #22c55e44, 0 8px 32px #22c55e22; }
-    .dot { transition: background 0.2s; }
-    .criterion-row:hover td { background: var(--accent); }
+    :root {
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+    }
+    pre, code {
+      font-family: var(--font-mono);
+    }
+    .slide { display: none; opacity: 0; transform: translateY(8px); transition: opacity 0.35s ease, transform 0.35s ease; }
+    .slide.active { display: flex; opacity: 1; transform: translateY(0); }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .light .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    }
+    .glow-green {
+      box-shadow: 0 0 35px -5px rgba(34, 197, 94, 0.25), 0 0 15px -3px rgba(34, 197, 94, 0.3);
+    }
+    .glow-blue {
+      box-shadow: 0 0 35px -5px rgba(59, 130, 246, 0.25);
+    }
+    .bar-fill {
+      transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    /* Grid Overview Modal */
+    #overview-modal { display: none; }
+    #overview-modal.open { display: flex; }
+    .overview-card:hover {
+      transform: scale(1.03);
+      border-color: #22c55e;
+    }
+    /* Print Styles */
+    @media print {
+      body { background: white !important; color: black !important; }
+      .no-print { display: none !important; }
+      .slide { display: flex !important; opacity: 1 !important; page-break-after: always; height: 100vh; }
+    }
   </style>
 </head>
-<body class="bg-[var(--background)] text-[var(--foreground)] antialiased" style="min-height:100vh;">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white transition-colors duration-300">
 
-<!-- PRESENTATION WRAPPER -->
-<div class="relative min-h-screen flex flex-col" style="min-height:100vh;">
-
-  <!-- HEADER BAR -->
-  <div class="flex items-center justify-between px-8 py-4 border-b border-[var(--border)] bg-[var(--sidebar)]">
-    <div>
-      <span class="text-xs font-semibold text-[var(--muted-foreground)] tracking-widest uppercase">MÃ¼ller &amp; Partner GmbH</span>
-      <h1 class="text-lg font-bold text-[var(--foreground)]">Nutzwertanalyse â€“ Zentrales IT-Monitoring</h1>
-    </div>
-    <div class="flex items-center gap-2 text-xs text-[var(--muted-foreground)]">
-      <span>Oktober 2026</span>
-      <span class="px-2 py-0.5 rounded-full bg-[var(--accent)] font-semibold">v1.0</span>
-    </div>
+  <!-- TOP PROGRESS BAR -->
+  <div class="fixed top-0 left-0 right-0 h-1 bg-slate-900 z-50 no-print">
+    <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 w-1/10 transition-all duration-300"></div>
   </div>
 
-  <!-- SLIDE CONTAINER -->
-  <div class="flex-1 relative overflow-hidden">
+  <!-- NAVIGATION HEADER -->
+  <header class="border-b border-slate-800/80 bg-slate-950/70 backdrop-blur-md px-6 py-3 flex items-center justify-between sticky top-0 z-40 no-print">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-bold text-sm shadow-inner">
+        CMK
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs uppercase tracking-wider font-semibold text-emerald-400">Müller & Partner GmbH</span>
+          <span class="text-slate-600">•</span>
+          <span class="text-xs text-slate-400">Grone Umschulungsteam</span>
+        </div>
+        <h1 class="text-sm font-semibold text-slate-200">Einführung eines zentralen IT-Monitorings (PoC)</h1>
+      </div>
+    </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 1: TITLE â•â•â•â•â•â•â•â•â•â• -->
-    <div class="slide active flex-col items-center justify-center text-center px-8 py-16 min-h-full" id="slide-1">
+    <!-- Quick Controls -->
+    <div class="flex items-center gap-2 text-xs">
+      <button onclick="toggleOverview()" title="Folienübersicht (O)" class="px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 transition flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        <span class="hidden sm:inline">Übersicht (O)</span>
+      </button>
+
+      <button onclick="toggleTheme()" title="Design wechseln (T)" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 transition">
+        <span id="theme-icon">☀️</span>
+      </button>
+
+      <button onclick="toggleFullscreen()" title="Vollbild (F)" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 transition hidden sm:inline-block">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+      </button>
+
+      <div class="h-4 w-[1px] bg-slate-800 mx-1"></div>
+
+      <span id="slide-badge" class="px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-medium">
+        01 / 10
+      </span>
+    </div>
+  </header>
+
+  <!-- SLIDES VIEWPORT -->
+  <main class="flex-1 relative flex items-center justify-center p-4 sm:p-8 overflow-y-auto">
+
+    <!-- ══════════════════ FOLIE 1: TITEL ══════════════════ -->
+    <div class="slide active flex-col items-center justify-center text-center max-w-5xl w-full py-8" id="slide-1">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-6 animate-pulse">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        Proof of Concept • 3 Projekttage
+      </div>
+
+      <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+        Einführung eines <br class="hidden sm:block"/>
+        <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+          zentralen IT-Monitorings
+        </span>
+      </h1>
+
+      <p class="text-slate-400 text-base sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+        Systematische Evaluation, Nutzwertanalyse und prototypische Implementierung mit <strong class="text-emerald-400 font-semibold">Checkmk Raw Edition 2.3</strong>
+      </p>
+
+      <!-- Key Project Metadata Badges -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 w-full max-w-3xl mb-12">
+        <div class="glass-card rounded-xl p-4 text-left border border-slate-800/80">
+          <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Auftraggeber</div>
+          <div class="text-sm font-bold text-slate-200 mt-1">Müller & Partner GmbH</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Wachsende IT-Infrastruktur</div>
+        </div>
+        <div class="glass-card rounded-xl p-4 text-left border border-slate-800/80">
+          <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Auftragnehmer</div>
+          <div class="text-sm font-bold text-emerald-400 mt-1">Grone Umschulungsteam</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Fachinformatiker SI</div>
+        </div>
+        <div class="glass-card rounded-xl p-4 text-left border border-slate-800/80">
+          <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Ergebnis</div>
+          <div class="text-sm font-bold text-white mt-1">11/11 MUSS erfüllt</div>
+          <div class="text-[11px] text-emerald-400 mt-0.5">100% Zielerreichung</div>
+        </div>
+        <div class="glass-card rounded-xl p-4 text-left border border-slate-800/80">
+          <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Systemauswahl</div>
+          <div class="text-sm font-bold text-emerald-400 mt-1">Checkmk Raw 2.3</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Rang 1 (4,40 Punkte)</div>
+        </div>
+      </div>
+
+      <!-- Quick hints -->
+      <div class="flex items-center gap-4 text-xs text-slate-500">
+        <span class="flex items-center gap-1.5"><kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">Space</kbd> oder <kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">→</kbd> zum Blättern</span>
+        <span>•</span>
+        <span class="flex items-center gap-1.5"><kbd class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">F</kbd> für Vollbild</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════ FOLIE 2: AUSGANGSLAGE ══════════════════ -->
+    <div class="slide flex-col max-w-5xl w-full" id="slide-2">
       <div class="mb-6">
-        <span class="inline-block px-4 py-1 rounded-full text-sm font-semibold bg-green-500 text-white mb-4">POC â€“ 3 Projekttage</span>
-        <h2 class="text-4xl font-extrabold text-[var(--foreground)] leading-tight mb-4">
-          Warum wir uns fÃ¼r<br/>
-          <span class="text-green-500">Checkmk Raw Edition</span><br/>
-          entschieden haben
-        </h2>
-        <p class="text-[var(--muted-foreground)] text-lg max-w-xl mx-auto">
-          Systematische Bewertung von drei fÃ¼hrenden Open-Source-Monitoring-LÃ¶sungen mittels gewichteter Nutzwertanalyse
-        </p>
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Kapitel 01</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Ausgangslage &amp; Problemstellung</h2>
+        <p class="text-slate-400 text-sm mt-1">Warum die bisherige Betriebsweise ein untragbares Risiko darstellte</p>
       </div>
-      <div class="flex gap-8 mt-8 justify-center flex-wrap">
-        <div class="flex flex-col items-center gap-2 p-5 rounded-xl bg-[var(--card)] border border-[var(--border)] w-36">
-          <span class="text-3xl">ðŸ†</span>
-          <span class="font-bold text-green-500">Checkmk</span>
-          <span class="text-xs text-[var(--muted-foreground)]">Raw Edition</span>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- Problem Card -->
+        <div class="glass-card rounded-2xl p-6 border-l-4 border-l-rose-500">
+          <div class="flex items-center gap-2.5 text-rose-400 font-bold mb-3">
+            <span class="text-xl">⚠️</span>
+            <h3>Bisherige Situation: Manuelle Überwachung</h3>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed mb-4">
+            Die Müller & Partner GmbH betrieb mehrere Linux-Server und Clients für Webanwendungen, Dateidienste und DNS/DHCP ohne zentrales Monitoringsystem.
+          </p>
+          <ul class="space-y-2.5 text-xs text-slate-400">
+            <li class="flex items-start gap-2">
+              <span class="text-rose-400 font-bold">✗</span>
+              <span><strong>Verzögerte Störungserkennung:</strong> Admins erfuhren von Ausfällen erst nach Beschwerden von Mitarbeitern.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-rose-400 font-bold">✗</span>
+              <span><strong>Unbemerkte DNS/DHCP-Ausfälle:</strong> Ganze Abteilungen verloren unbemerkt den Netzwerkzugriff.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-rose-400 font-bold">✗</span>
+              <span><strong>Gefahr von Datenverlust:</strong> Volllaufende Festplatten wurden vor dem Absturz nicht signalisiert.</span>
+            </li>
+          </ul>
         </div>
-        <div class="flex flex-col items-center gap-2 p-5 rounded-xl bg-[var(--card)] border border-[var(--border)] w-36">
-          <span class="text-3xl">ðŸ¥ˆ</span>
-          <span class="font-bold text-[var(--foreground)]">Zabbix</span>
-          <span class="text-xs text-[var(--muted-foreground)]">Community</span>
+
+        <!-- Solution Card -->
+        <div class="glass-card rounded-2xl p-6 border-l-4 border-l-emerald-500">
+          <div class="flex items-center gap-2.5 text-emerald-400 font-bold mb-3">
+            <span class="text-xl">🎯</span>
+            <h3>Zielsetzung des Projekts (PoC)</h3>
+          </div>
+          <p class="text-sm text-slate-300 leading-relaxed mb-4">
+            Einführung eines <strong>zentralen, proaktiven Open-Source-Monitorings</strong>, das Fehlerzustände meldet, <em>bevor</em> Endanwender beeinträchtigt werden.
+          </p>
+          <div class="space-y-3">
+            <div class="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs">
+              <div class="font-semibold text-emerald-300">1. Fundierte Marktevaluation</div>
+              <div class="text-slate-400 mt-0.5">Nutzwertanalyse von 3 führenden Open-Source-Lösungen</div>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs">
+              <div class="font-semibold text-emerald-300">2. Prototypischer Aufbau in 3 Tagen</div>
+              <div class="text-slate-400 mt-0.5">VirtualBox-Testnetzwerk mit Server, Web-Host &amp; Windows-Client</div>
+            </div>
+            <div class="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs">
+              <div class="font-semibold text-emerald-300">3. Validierung durch Störungstests</div>
+              <div class="text-slate-400 mt-0.5">Messung der Reaktionszeiten bei simulierten Dienst- und Hostausfällen</div>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-col items-center gap-2 p-5 rounded-xl bg-[var(--card)] border border-[var(--border)] w-36">
-          <span class="text-3xl">ðŸ¥‰</span>
-          <span class="font-bold text-[var(--foreground)]">Nagios Core</span>
-          <span class="text-xs text-[var(--muted-foreground)]">Open Source</span>
+      </div>
+
+      <!-- Quote Banner -->
+      <div class="p-4 rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700/60 flex items-center justify-between text-xs">
+        <span class="text-slate-300"><strong>Kernparadigma:</strong> Vom reaktiven „Brandlöschen“ zur proaktiven Früherkennung im Minutentakt.</span>
+        <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 font-mono font-bold">PoC Erfolg: 100%</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════ FOLIE 3: ANFORDERUNGEN ══════════════════ -->
+    <div class="slide flex-col max-w-5xl w-full" id="slide-3">
+      <div class="mb-5">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Kapitel 02</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Anforderungsanalyse (Abgabeprodukt A)</h2>
+        <p class="text-slate-400 text-sm mt-1">11 verbindliche MUSS-Kriterien + 3 KANN-Zusatzleistungen erfolgreich erfüllt</p>
+      </div>
+
+      <!-- MUSS-GRID -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 mb-5 text-xs">
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M01</strong> <span class="text-slate-200 ml-1.5 font-medium">Zentrales Monitoring</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M02</strong> <span class="text-slate-200 ml-1.5 font-medium">Multi-System (&gt;2 Hosts)</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M03</strong> <span class="text-slate-200 ml-1.5 font-medium">Erreichbarkeit (ICMP)</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M04</strong> <span class="text-slate-200 ml-1.5 font-medium">Ressourcen (CPU/RAM/Disk)</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M05</strong> <span class="text-slate-200 ml-1.5 font-medium">Netzwerkdienste (HTTP/SQL/SSH)</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M06</strong> <span class="text-slate-200 ml-1.5 font-medium">Schwellwerte (Warn/Crit)</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M07</strong> <span class="text-slate-200 ml-1.5 font-medium">Automatische Alarmierung</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M08</strong> <span class="text-slate-200 ml-1.5 font-medium">Zentrales Dashboard</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M09</strong> <span class="text-slate-200 ml-1.5 font-medium">Custom Check (Eigenes Skript)</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M10</strong> <span class="text-slate-200 ml-1.5 font-medium">Störungssimulation (4 Tests)</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-slate-800">
+          <div><strong class="text-emerald-400">M11</strong> <span class="text-slate-200 ml-1.5 font-medium">Strukturierter Abnahmetest</span></div>
+          <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold text-[10px]">ERFÜLLT ✓</span>
+        </div>
+        <div class="glass-card p-3 rounded-xl flex items-center justify-between border-emerald-500/30 bg-emerald-500/5">
+          <div><strong class="text-teal-400">K01–K04</strong> <span class="text-slate-200 ml-1.5 font-medium">KANN-Features</span></div>
+          <span class="px-2 py-0.5 rounded bg-teal-500/20 text-teal-300 font-bold text-[10px]">3 UMGESETZT ✓</span>
+        </div>
+      </div>
+
+      <!-- KANN Highlights -->
+      <div class="p-4 rounded-xl glass-card border-slate-800 text-xs">
+        <span class="font-bold text-slate-300 uppercase tracking-wider">Ergänzende KANN-Zusatzleistungen:</span>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2 text-slate-400">
+          <div>🔹 <strong>K01 E-Mail-Alarmierung:</strong> Automatische Event-Benachrichtigung vorbereitet.</div>
+          <div>🔹 <strong>K02 Erweiterte Dashboards:</strong> Taktische Übersicht &amp; Service-Matrizen.</div>
+          <div>🔹 <strong>K04 Detaillierter Custom Check:</strong> Performance-Messung und Schwellenwert-Historie.</div>
         </div>
       </div>
     </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 2: AUSGANGSLAGE â•â•â•â•â•â•â•â•â•â• -->
-    <div class="slide flex-col justify-center px-10 py-12 min-h-full" id="slide-2">
-      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Ausgangslage &amp; Problemstellung</h2>
-      <p class="text-[var(--muted-foreground)] mb-8 text-sm">Warum musste ein Monitoring-System eingefÃ¼hrt werden?</p>
-      <div class="grid grid-cols-1 gap-4 max-w-3xl" style="grid-template-columns: repeat(auto-fit, minmax(260px,1fr));">
-        <div class="p-5 rounded-xl bg-[var(--card)] border border-red-400/40">
-          <div class="text-2xl mb-2">â°</div>
-          <h3 class="font-semibold text-[var(--foreground)] mb-1">VerzÃ¶gerte StÃ¶rungsmeldungen</h3>
-          <p class="text-sm text-[var(--muted-foreground)]">Manuelle Ãœberwachung fÃ¼hrte zu langen Reaktionszeiten bei AusfÃ¤llen</p>
-        </div>
-        <div class="p-5 rounded-xl bg-[var(--card)] border border-orange-400/40">
-          <div class="text-2xl mb-2">ðŸŒ</div>
-          <h3 class="font-semibold text-[var(--foreground)] mb-1">Unbemerkte NetzwerkausfÃ¤lle</h3>
-          <p class="text-sm text-[var(--muted-foreground)]">DNS/DHCP-Dienste konnten unbemerkt ausfallen</p>
-        </div>
-        <div class="p-5 rounded-xl bg-[var(--card)] border border-yellow-400/40">
-          <div class="text-2xl mb-2">ðŸ’¾</div>
-          <h3 class="font-semibold text-[var(--foreground)] mb-1">FestplattenengpÃ¤sse</h3>
-          <p class="text-sm text-[var(--muted-foreground)]">Potenzielle Datenverluste durch unentdeckten Speicherplatzmangel</p>
-        </div>
-        <div class="p-5 rounded-xl bg-[var(--card)] border border-blue-400/40">
-          <div class="text-2xl mb-2">ðŸ“ˆ</div>
-          <h3 class="font-semibold text-[var(--foreground)] mb-1">Wachsende Infrastruktur</h3>
-          <p class="text-sm text-[var(--muted-foreground)]">Mehrere Linux-Server &amp; Clients â€“ manuelle Kontrolle nicht mehr skalierbar</p>
-        </div>
+    <!-- ══════════════════ FOLIE 4: DIE 3 KANDIDATEN ══════════════════ -->
+    <div class="slide flex-col max-w-5xl w-full" id="slide-4">
+      <div class="mb-5">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Kapitel 03</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Die 3 Kandidaten im Systemvergleich</h2>
+        <p class="text-slate-400 text-sm mt-1">Marktanalyse führender Open-Source-Monitoring-Lösungen</p>
       </div>
-      <div class="mt-8 p-4 rounded-xl bg-green-500/10 border border-green-500/30 max-w-3xl">
-        <p class="text-sm text-[var(--foreground)]"><strong>ðŸŽ¯ Projektziel:</strong> Proaktive StÃ¶rungserkennung <em>vor</em> BeeintrÃ¤chtigung der Endanwender durch ein zentrales Open-Source-Monitoring-System</p>
-      </div>
-    </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 3: KANDIDATEN â•â•â•â•â•â•â•â•â•â• -->
-    <div class="slide flex-col justify-center px-10 py-12 min-h-full" id="slide-3">
-      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Die drei Kandidaten</h2>
-      <p class="text-[var(--muted-foreground)] mb-8 text-sm">Evaluierte marktfÃ¼hrende Open-Source-Monitoring-LÃ¶sungen</p>
-      <div class="grid gap-5 max-w-4xl" style="grid-template-columns: repeat(auto-fit, minmax(280px,1fr));">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <!-- Checkmk -->
-        <div class="p-6 rounded-xl bg-[var(--card)] border-2 border-green-500 winner-glow">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xl font-extrabold text-green-500">Checkmk Raw</span>
-            <span class="px-2 py-0.5 rounded-full bg-green-500/20 text-green-500 text-xs font-bold">âœ“ GewÃ¤hlt</span>
+        <div class="glass-card rounded-2xl p-5 border-2 border-emerald-500 glow-green relative flex flex-col justify-between">
+          <div class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-emerald-500 text-slate-950 font-extrabold text-[10px] tracking-wide uppercase">
+            Testsieger 🏆
           </div>
-          <ul class="space-y-2 text-sm text-[var(--foreground)]">
-            <li>âœ… Intuitive Web-GUI (WATO)</li>
-            <li>âœ… Auto-Discovery (automatisch)</li>
-            <li>âœ… Agenten fÃ¼r Linux &amp; Windows</li>
-            <li>âœ… Dashboards Out-of-the-Box</li>
-            <li>âœ… Keine externe Datenbank nÃ¶tig</li>
-          </ul>
+          <div>
+            <div class="text-xl font-extrabold text-white">Checkmk Raw</div>
+            <div class="text-xs text-emerald-400 font-medium mb-3">Version 2.3.0 (Community)</div>
+            <ul class="space-y-2 text-xs text-slate-300">
+              <li class="flex items-center gap-1.5 text-emerald-400">✓ Sehr intuitive Web-GUI (WATO)</li>
+              <li class="flex items-center gap-1.5 text-emerald-400">✓ Automatische Service-Erkennung</li>
+              <li class="flex items-center gap-1.5 text-emerald-400">✓ Fertige Out-of-the-Box Dashboards</li>
+              <li class="flex items-center gap-1.5 text-emerald-400">✓ Keine separate Datenbank nötig</li>
+              <li class="flex items-center gap-1.5 text-emerald-400">✓ Perfekt für 3-Tage-Implementierung</li>
+            </ul>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-center">
+            <span class="text-2xl font-black text-emerald-400">4,40</span>
+            <span class="text-xs text-slate-400"> / 5,00 Punkte</span>
+          </div>
         </div>
+
         <!-- Zabbix -->
-        <div class="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)]">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xl font-extrabold text-[var(--foreground)]">Zabbix</span>
-            <span class="px-2 py-0.5 rounded-full bg-[var(--accent)] text-[var(--muted-foreground)] text-xs font-bold">Rang 2</span>
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 relative flex flex-col justify-between">
+          <div>
+            <div class="text-xl font-extrabold text-white">Zabbix</div>
+            <div class="text-xs text-blue-400 font-medium mb-3">Version 7.0 LTS</div>
+            <ul class="space-y-2 text-xs text-slate-300">
+              <li class="flex items-center gap-1.5 text-blue-400">✓ Hochgradig flexibel &amp; skalierbar</li>
+              <li class="flex items-center gap-1.5 text-blue-400">✓ Starke Template-Engine</li>
+              <li class="flex items-center gap-1.5 text-amber-400">⚠️ Hohe Einarbeitungszeit</li>
+              <li class="flex items-center gap-1.5 text-amber-400">⚠️ Externe DB erforderlich (MySQL/PG)</li>
+              <li class="flex items-center gap-1.5 text-rose-400">✗ Setup zu zeitaufwendig für 3 Tage</li>
+            </ul>
           </div>
-          <ul class="space-y-2 text-sm text-[var(--foreground)]">
-            <li>âœ… LeistungsfÃ¤hig &amp; skalierbar</li>
-            <li>âœ… Flexible Templates/Trigger</li>
-            <li>âš ï¸ HÃ¶herer Einarbeitungsaufwand</li>
-            <li>âš ï¸ Externe Datenbank erforderlich</li>
-            <li>âš ï¸ Komplexere Ersteinrichtung</li>
-          </ul>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-center">
+            <span class="text-2xl font-black text-slate-300">4,20</span>
+            <span class="text-xs text-slate-400"> / 5,00 Punkte (Rang 2)</span>
+          </div>
         </div>
+
         <!-- Nagios -->
-        <div class="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)]">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xl font-extrabold text-[var(--foreground)]">Nagios Core</span>
-            <span class="px-2 py-0.5 rounded-full bg-[var(--accent)] text-[var(--muted-foreground)] text-xs font-bold">Rang 3</span>
+        <div class="glass-card rounded-2xl p-5 border border-slate-800 relative flex flex-col justify-between">
+          <div>
+            <div class="text-xl font-extrabold text-white">Nagios Core</div>
+            <div class="text-xs text-slate-500 font-medium mb-3">Version 4.5</div>
+            <ul class="space-y-2 text-xs text-slate-300">
+              <li class="flex items-center gap-1.5 text-slate-400">✓ Historischer Industriestandard</li>
+              <li class="flex items-center gap-1.5 text-slate-400">✓ Extrem sparsam bei Ressourcen</li>
+              <li class="flex items-center gap-1.5 text-rose-400">✗ Veraltete Benutzeroberfläche</li>
+              <li class="flex items-center gap-1.5 text-rose-400">✗ Rein dateibasierte Text-Konfiguration</li>
+              <li class="flex items-center gap-1.5 text-rose-400">✗ Keine integrierten Dashboards</li>
+            </ul>
           </div>
-          <ul class="space-y-2 text-sm text-[var(--foreground)]">
-            <li>âœ… Klassischer Standard</li>
-            <li>âœ… Sehr ressourcenschonend</li>
-            <li>âŒ Veraltete BenutzeroberflÃ¤che</li>
-            <li>âŒ Rein dateibasierte Konfiguration</li>
-            <li>âŒ Keine integrierten Dashboards</li>
-          </ul>
+          <div class="mt-4 pt-3 border-t border-slate-800 text-center">
+            <span class="text-2xl font-black text-slate-500">3,30</span>
+            <span class="text-xs text-slate-500"> / 5,00 Punkte (Rang 3)</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 4: KRITERIEN â•â•â•â•â•â•â•â•â•â• -->
-    <div class="slide flex-col justify-center px-10 py-10 min-h-full" id="slide-4">
-      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Bewertungskriterien &amp; Gewichtung</h2>
-      <p class="text-[var(--muted-foreground)] mb-6 text-sm">7 Kriterien â€“ gewichtet nach Projektrelevanz (Summe: 100%)</p>
-      <div class="max-w-3xl w-full space-y-3">
-        <!-- Criteria bars -->
-        <div id="criteria-container" class="space-y-3"></div>
+      <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 text-center">
+        💡 <strong>Fazit des Kandidatenvergleichs:</strong> Alle 3 Tools sind lizenzkostenfrei (Open Source). Der Unterschied lag primär in Usability und Time-to-Value.
       </div>
     </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 5: NUTZWERTMATRIX â•â•â•â•â•â•â•â•â•â• -->
-    <div class="slide flex-col justify-center px-6 py-8 min-h-full" id="slide-5">
-      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Nutzwertmatrix â€“ Gewichtete Bewertung</h2>
-      <p class="text-[var(--muted-foreground)] mb-5 text-sm">Bewertung 1â€“5 Ã— Gewichtung = Nutzwert je Kriterium</p>
-      <div class="overflow-x-auto max-w-full">
-        <table class="w-full text-sm border-collapse">
-          <thead>
-            <tr class="bg-[var(--accent)]">
-              <th class="text-left p-3 rounded-tl-lg text-[var(--foreground)] font-semibold">Kriterium</th>
-              <th class="p-3 text-center text-[var(--muted-foreground)] font-semibold">Gewicht</th>
-              <th class="p-3 text-center text-green-500 font-bold">Checkmk Raw</th>
-              <th class="p-3 text-center text-[var(--foreground)] font-semibold">Zabbix</th>
-              <th class="p-3 text-center text-[var(--muted-foreground)] font-semibold rounded-tr-lg">Nagios Core</th>
+    <!-- ══════════════════ FOLIE 5: NUTZWERTANALYSE-MATRIX ══════════════════ -->
+    <div class="slide flex-col max-w-5xl w-full" id="slide-5">
+      <div class="mb-4">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Kapitel 04</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Nutzwertanalyse &amp; Bewertungsmatrix</h2>
+        <p class="text-slate-400 text-sm mt-1">Gewichtete Entscheidung nach DIN-Standard (Skala 1–5)</p>
+      </div>
+
+      <!-- TABLE -->
+      <div class="glass-card rounded-2xl overflow-hidden border-slate-800 mb-4">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-slate-900/90 text-slate-400 border-b border-slate-800 uppercase text-[10px] tracking-wider">
+            <tr>
+              <th class="p-3.5">Bewertungskriterium</th>
+              <th class="p-3.5 text-center">Gewichtung</th>
+              <th class="p-3.5 text-center text-emerald-400 bg-emerald-500/5 font-bold">Checkmk Raw</th>
+              <th class="p-3.5 text-center text-blue-400">Zabbix</th>
+              <th class="p-3.5 text-center text-slate-400">Nagios Core</th>
             </tr>
           </thead>
-          <tbody id="matrix-body">
+          <tbody class="divide-y divide-slate-800/60 font-mono">
+            <tr class="hover:bg-slate-800/30 transition">
+              <td class="p-3 font-sans text-slate-300">1. Kosten / Lizenz</td>
+              <td class="p-3 text-center text-slate-400">10 %</td>
+              <td class="p-3 text-center font-bold text-emerald-400 bg-emerald-500/5">5 / 0,50</td>
+              <td class="p-3 text-center text-slate-300">5 / 0,50</td>
+              <td class="p-3 text-center text-slate-400">5 / 0,50</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition bg-emerald-500/5">
+              <td class="p-3 font-sans text-white font-semibold flex items-center gap-1.5">
+                <span>2. Bedienbarkeit &amp; GUI</span>
+                <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-sans font-bold">Ausschlaggebend</span>
+              </td>
+              <td class="p-3 text-center font-bold text-emerald-400 font-sans">20 %</td>
+              <td class="p-3 text-center font-black text-emerald-400 text-sm bg-emerald-500/10">5 / 1,00</td>
+              <td class="p-3 text-center text-slate-300">3 / 0,60</td>
+              <td class="p-3 text-center text-slate-400">2 / 0,40</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition">
+              <td class="p-3 font-sans text-slate-300">3. OS-Unterstützung</td>
+              <td class="p-3 text-center text-slate-400">10 %</td>
+              <td class="p-3 text-center text-slate-300 bg-emerald-500/5">4 / 0,40</td>
+              <td class="p-3 text-center font-bold text-blue-400">5 / 0,50</td>
+              <td class="p-3 text-center text-slate-400">4 / 0,40</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition">
+              <td class="p-3 font-sans text-slate-300">4. Netzwerkdienste</td>
+              <td class="p-3 text-center text-slate-400">15 %</td>
+              <td class="p-3 text-center text-slate-300 bg-emerald-500/5">4 / 0,60</td>
+              <td class="p-3 text-center font-bold text-blue-400">5 / 0,75</td>
+              <td class="p-3 text-center text-slate-400">4 / 0,60</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition">
+              <td class="p-3 font-sans text-slate-300">5. Alarmierung</td>
+              <td class="p-3 text-center text-slate-400">15 %</td>
+              <td class="p-3 text-center text-slate-300 bg-emerald-500/5">4 / 0,60</td>
+              <td class="p-3 text-center text-slate-300">4 / 0,60</td>
+              <td class="p-3 text-center text-slate-400">3 / 0,45</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition bg-emerald-500/5">
+              <td class="p-3 font-sans text-white font-semibold flex items-center gap-1.5">
+                <span>6. Visualisierung / Dashboards</span>
+                <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-sans font-bold">Ausschlaggebend</span>
+              </td>
+              <td class="p-3 text-center text-slate-400">15 %</td>
+              <td class="p-3 text-center font-black text-emerald-400 text-sm bg-emerald-500/10">5 / 0,75</td>
+              <td class="p-3 text-center text-slate-300">4 / 0,60</td>
+              <td class="p-3 text-center text-slate-400">2 / 0,30</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition">
+              <td class="p-3 font-sans text-slate-300">7. Erweiterbarkeit &amp; Doku</td>
+              <td class="p-3 text-center text-slate-400">15 %</td>
+              <td class="p-3 text-center text-slate-300 bg-emerald-500/5">4 / 0,55</td>
+              <td class="p-3 text-center font-bold text-blue-400">5 / 0,65</td>
+              <td class="p-3 text-center text-slate-400">4 / 0,60</td>
+            </tr>
           </tbody>
-          <tfoot>
-            <tr class="border-t-2 border-[var(--border)] bg-[var(--accent)] font-bold">
-              <td class="p-3 rounded-bl-lg text-[var(--foreground)]">Gesamtergebnis</td>
-              <td class="p-3 text-center text-[var(--muted-foreground)]">100%</td>
-              <td class="p-3 text-center text-green-500 text-base">4,40 ðŸ†</td>
-              <td class="p-3 text-center text-[var(--foreground)]">4,20</td>
-              <td class="p-3 text-center text-[var(--muted-foreground)] rounded-br-lg">3,30</td>
+          <tfoot class="bg-slate-900 border-t-2 border-slate-700 font-bold text-sm">
+            <tr>
+              <td class="p-3.5 text-white">Gesamtergebnis</td>
+              <td class="p-3.5 text-center text-slate-400">100 %</td>
+              <td class="p-3.5 text-center text-emerald-400 bg-emerald-500/10 text-base font-black">4,40 (Rang 1) 🏆</td>
+              <td class="p-3.5 text-center text-slate-300 font-mono">4,20 (Rang 2)</td>
+              <td class="p-3.5 text-center text-slate-500 font-mono">3,30 (Rang 3)</td>
             </tr>
           </tfoot>
         </table>
       </div>
     </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 6: ERGEBNIS VISUALISIERUNG â•â•â•â•â•â•â•â•â•â• -->
-    <div class="slide flex-col justify-center px-10 py-12 min-h-full" id="slide-6">
-      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Ergebnis auf einen Blick</h2>
-      <p class="text-[var(--muted-foreground)] mb-8 text-sm">Gesamtpunktzahl (max. 5,00 Punkte)</p>
-      <div class="flex flex-col gap-6 max-w-2xl w-full">
-        <!-- Checkmk -->
-        <div class="score-card p-5 rounded-xl bg-[var(--card)] border-2 border-green-500 winner-glow">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">ðŸ†</span>
-              <div>
-                <span class="font-extrabold text-lg text-green-500">Checkmk Raw Edition</span>
-                <span class="ml-2 text-xs px-2 py-0.5 bg-green-500/20 text-green-500 rounded-full font-bold">Rang 1 â€“ AUSGEWÃ„HLT</span>
+    <!-- ══════════════════ FOLIE 6: WARUM CHECKMK GEWONNEN HAT ══════════════════ -->
+    <div class="slide flex-col max-w-5xl w-full" id="slide-6">
+      <div class="mb-5">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Kapitel 05</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Entscheidungsbegründung: Warum Checkmk?</h2>
+        <p class="text-slate-400 text-sm mt-1">Detailanalyse des Punkteabstands zwischen Checkmk (4,40) und Zabbix (4,20)</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+        <!-- Der Gamechanger -->
+        <div class="glass-card rounded-2xl p-6 border-l-4 border-l-emerald-500 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm mb-2">
+              <span>🚀</span>
+              <h3>Die zwei siegbringenden Kriterien (+0,55 Punkte)</h3>
+            </div>
+            <div class="space-y-4 text-xs mt-3">
+              <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+                <div class="flex items-center justify-between font-bold text-white mb-1">
+                  <span>Bedienbarkeit &amp; Web-GUI (20% Gewicht)</span>
+                  <span class="text-emerald-400">+0,40 Vorsprung</span>
+                </div>
+                <p class="text-slate-400">Checkmk holt die Bestnote (5/5). WATO-Oberfläche, Auto-Discovery und menügeführte Agenten sparen tagelange Einarbeitung. Zabbix (3/5) verlangt deutlich höhere Konfigurationskomplexität.</p>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
+                <div class="flex items-center justify-between font-bold text-white mb-1">
+                  <span>Visualisierung &amp; Dashboards (15% Gewicht)</span>
+                  <span class="text-emerald-400">+0,15 Vorsprung</span>
+                </div>
+                <p class="text-slate-400">Fertige taktische Dashboards direkt nach Installation. Bei Nagios fehlt eine native Visualisierung komplett (2/5), Zabbix benötigt Vorlagenanpassung.</p>
               </div>
             </div>
-            <span class="text-2xl font-extrabold text-green-500">4,40</span>
           </div>
-          <div class="w-full bg-[var(--accent)] rounded-full h-4">
-            <div class="bar-fill bg-green-500 h-4 rounded-full" style="width:88%"></div>
-          </div>
-        </div>
-        <!-- Zabbix -->
-        <div class="score-card p-5 rounded-xl bg-[var(--card)] border border-[var(--border)]">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">ðŸ¥ˆ</span>
-              <span class="font-bold text-lg text-[var(--foreground)]">Zabbix</span>
-            </div>
-            <span class="text-2xl font-bold text-[var(--foreground)]">4,20</span>
-          </div>
-          <div class="w-full bg-[var(--accent)] rounded-full h-4">
-            <div class="bar-fill bg-blue-400 h-4 rounded-full" style="width:84%"></div>
+
+          <div class="mt-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 font-semibold">
+            ✓ Allein hier: +0,55 Punkte Vorsprung für Checkmk
           </div>
         </div>
-        <!-- Nagios -->
-        <div class="score-card p-5 rounded-xl bg-[var(--card)] border border-[var(--border)]">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-3">
-              <span class="text-2xl">ðŸ¥‰</span>
-              <span class="font-bold text-lg text-[var(--foreground)]">Nagios Core</span>
+
+        <!-- Wo Zabbix punktete -->
+        <div class="glass-card rounded-2xl p-6 border-l-4 border-l-blue-500 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 text-blue-400 font-bold text-sm mb-2">
+              <span>⚖️</span>
+              <h3>Zabbix's Aufholjagd (+0,35 Punkte) – warum es nicht reichte</h3>
             </div>
-            <span class="text-2xl font-bold text-[var(--muted-foreground)]">3,30</span>
+            <p class="text-xs text-slate-400 mb-3">Zabbix war in 3 Kriterien überlegen, konnte den Rückstand wegen geringerer Gewichtung aber nicht aufholen:</p>
+            
+            <div class="space-y-2 text-xs">
+              <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80">
+                <span class="text-slate-300">Netzwerkdienste (15% Gewicht)</span>
+                <span class="text-blue-400 font-mono font-bold">+0,15 für Zabbix</span>
+              </div>
+              <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80">
+                <span class="text-slate-300">Erweiterbarkeit &amp; Doku (15% Gewicht)</span>
+                <span class="text-blue-400 font-mono font-bold">+0,10 für Zabbix</span>
+              </div>
+              <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80">
+                <span class="text-slate-300">OS-Unterstützung (10% Gewicht)</span>
+                <span class="text-blue-400 font-mono font-bold">+0,10 für Zabbix</span>
+              </div>
+            </div>
           </div>
-          <div class="w-full bg-[var(--accent)] rounded-full h-4">
-            <div class="bar-fill bg-gray-400 h-4 rounded-full" style="width:66%"></div>
+
+          <div class="mt-4 p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300 font-semibold">
+            📊 <strong>Differenz-Rechnung:</strong> +0,55 (Checkmk) minus +0,35 (Zabbix) = <strong>+0,20 Punkte Gesamtsieg</strong> für Checkmk.
           </div>
+        </div>
+      </div>
+
+      <!-- Offizieller Beschluss -->
+      <div class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/60 to-slate-900 border border-emerald-500/40 text-xs">
+        <strong class="text-emerald-400">Offizieller Projektentscheid:</strong> Die <em>Checkmk Raw Edition</em> wird aufgrund der hervorragenden Bedienbarkeit, der integrierten Out-of-the-Box Dashboards und der zeitsparenden Auto-Discovery als Zielsystem für den PoC ausgewählt.
+      </div>
+    </div>
+
+    <!-- ══════════════════ FOLIE 7: TOPOLOGIE & ARCHITEKTUR ══════════════════ -->
+    <div class="slide flex-col max-w-5xl w-full" id="slide-7">
+      <div class="mb-5">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Kapitel 06</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Testnetz-Architektur &amp; Topologie</h2>
+        <p class="text-slate-400 text-sm mt-1">Strukturiertes 3-System-Testnetz (VirtualBox Host-Only Subnetz 192.168.56.0/24)</p>
+      </div>
+
+      <!-- TOPOLOGY VISUALIZATION -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+        <!-- Server -->
+        <div class="glass-card rounded-2xl p-5 border-2 border-emerald-500/50 glow-green">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono font-bold">SERVER</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+          </div>
+          <div class="text-lg font-bold text-white">mon-srv01</div>
+          <div class="text-xs font-mono text-emerald-400 mb-3">192.168.56.101</div>
+          <ul class="space-y-1.5 text-xs text-slate-300">
+            <li>🖥️ <strong>OS:</strong> Ubuntu 26.04 LTS VM</li>
+            <li>⚙️ <strong>Rolle:</strong> Checkmk Raw 2.3 (Docker)</li>
+            <li>🌐 <strong>Web-GUI:</strong> Port 8080 (Host)</li>
+            <li>📊 <strong>Status:</strong> 24 Services aktiv</li>
+          </ul>
+        </div>
+
+        <!-- Linux Client -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-mono font-bold">CLIENT LINUX</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+          </div>
+          <div class="text-lg font-bold text-white">web-srv01</div>
+          <div class="text-xs font-mono text-blue-400 mb-3">192.168.56.102</div>
+          <ul class="space-y-1.5 text-xs text-slate-300">
+            <li>🖥️ <strong>OS:</strong> Geklonte Ubuntu VM</li>
+            <li>🌐 <strong>Apache2:</strong> Port 80 (HTTP 200 OK)</li>
+            <li>🗄️ <strong>MariaDB:</strong> Port 3306 (MySQL)</li>
+            <li>🔑 <strong>OpenSSH:</strong> Port 22</li>
+            <li>🐍 <strong>Custom Check:</strong> TCP Connections</li>
+          </ul>
+        </div>
+
+        <!-- Windows Client -->
+        <div class="glass-card rounded-2xl p-5 border border-slate-800">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 font-mono font-bold">CLIENT WINDOWS</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+          </div>
+          <div class="text-lg font-bold text-white">win-client01</div>
+          <div class="text-xs font-mono text-purple-400 mb-3">192.168.56.1</div>
+          <ul class="space-y-1.5 text-xs text-slate-300">
+            <li>💻 <strong>OS:</strong> Windows 10/11 Host-PC</li>
+            <li>⚙️ <strong>Agent:</strong> Checkmk Windows Agent MSI</li>
+            <li>📡 <strong>Port:</strong> 6556 TCP (Agent)</li>
+            <li>📊 <strong>Überwacht:</strong> CPU, RAM, Disk C:</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Network Flow Diagram Box -->
+      <div class="p-4 rounded-xl glass-card border-slate-800 text-xs">
+        <div class="flex items-center justify-between text-slate-400 mb-2">
+          <span><strong>Kommunikationsfluss:</strong> Checkmk Server pollt Agenten im Minutentakt (TCP Port 6556)</span>
+          <span class="text-emerald-400 font-mono">Pull-Architektur</span>
+        </div>
+        <div class="flex items-center gap-2 text-[11px] text-slate-500">
+          <span class="px-2 py-0.5 rounded bg-slate-800">mon-srv01:6556 ➔ web-srv01</span>
+          <span>➔</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800">Local Checks (Python)</span>
+          <span>➔</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800">Livestatus Core</span>
+          <span>➔</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-emerald-400">Web-Dashboard (Port 8080)</span>
         </div>
       </div>
     </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 7: AUSSCHLAGGEBENDE KRITERIEN â•â•â•â•â•â•â•â•â•â• -->
-    <div class="slide flex-col justify-center px-8 py-10 min-h-full" id="slide-7">
-      <h2 class="text-2xl font-bold mb-1 text-[var(--foreground)]">Ausschlaggebende Kriterien</h2>
-      <p class="text-[var(--muted-foreground)] mb-6 text-sm">Warum Checkmk trotz SchwÃ¤chen in 2 Kriterien gewonnen hat</p>
-
-      <!-- TOP 2 DECISIVE - Checkmk winner -->
+    <!-- ══════════════════ FOLIE 8: CUSTOM LOCAL CHECK ══════════════════ -->
+    <div class="slide flex-col max-w-5xl w-full" id="slide-8">
       <div class="mb-4">
-        <p class="text-xs font-bold tracking-widest uppercase text-green-500 mb-3">âœ… Entscheidend fÃ¼r Checkmk</p>
-        <div class="grid gap-3 max-w-4xl" style="grid-template-columns: repeat(auto-fit, minmax(300px,1fr));">
-          <div class="p-4 rounded-xl bg-green-500/10 border-2 border-green-500">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-bold text-[var(--foreground)]">ðŸ–¥ï¸ Bedienbarkeit &amp; GUI</span>
-              <span class="text-xs px-2 py-0.5 bg-green-500 text-white rounded-full font-bold">20% Gewicht</span>
-            </div>
-            <div class="flex gap-3 text-sm mb-2">
-              <span class="text-green-500 font-bold">Checkmk: 5 â†’ 1,00</span>
-              <span class="text-[var(--muted-foreground)]">Zabbix: 3 â†’ 0,60</span>
-              <span class="text-[var(--muted-foreground)]">Nagios: 2 â†’ 0,40</span>
-            </div>
-            <p class="text-xs text-[var(--muted-foreground)]">HÃ¶chstes Gewicht (20%) + maximale Punktzahl (5). Allein dieses Kriterium brachte Checkmk <strong class="text-green-500">+0,40 Punkte</strong> Vorsprung auf Zabbix â€“ der grÃ¶ÃŸte Einzelunterschied im gesamten Vergleich.</p>
-          </div>
-          <div class="p-4 rounded-xl bg-green-500/10 border-2 border-green-500">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-bold text-[var(--foreground)]">ðŸ“Š Visualisierung / Dashboards</span>
-              <span class="text-xs px-2 py-0.5 bg-green-500 text-white rounded-full font-bold">15% Gewicht</span>
-            </div>
-            <div class="flex gap-3 text-sm mb-2">
-              <span class="text-green-500 font-bold">Checkmk: 5 â†’ 0,75</span>
-              <span class="text-[var(--muted-foreground)]">Zabbix: 4 â†’ 0,60</span>
-              <span class="text-[var(--muted-foreground)]">Nagios: 2 â†’ 0,30</span>
-            </div>
-            <p class="text-xs text-[var(--muted-foreground)]">Out-of-the-Box Dashboards ohne Zusatzkonfiguration â€“ besonders wichtig fÃ¼r ein 3-Tage-POC. Checkmk liefert sofort nutzbare Ãœbersichten, Nagios hat <strong class="text-red-400">gar keine</strong>.</p>
-          </div>
-        </div>
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Kapitel 07</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Eigenentwicklung: Custom Local Check (M09)</h2>
+        <p class="text-slate-400 text-sm mt-1">Entwicklung eines eigenständigen Python-Plugins zur TCP-Verbindungsanalyse</p>
       </div>
 
-      <!-- WHERE CHECKMK LOST -->
-      <div>
-        <p class="text-xs font-bold tracking-widest uppercase text-orange-400 mb-3">âš ï¸ Kriterien mit Zabbix-Vorteil â€“ aber zu wenig Gewicht</p>
-        <div class="grid gap-3 max-w-4xl" style="grid-template-columns: repeat(auto-fit, minmax(280px,1fr));">
-          <div class="p-4 rounded-xl bg-orange-400/10 border border-orange-400/40">
-            <div class="flex items-center justify-between mb-1">
-              <span class="font-semibold text-sm text-[var(--foreground)]">ðŸŒ Netzwerkdienste</span>
-              <span class="text-xs text-orange-400 font-bold">15% Gewicht</span>
-            </div>
-            <p class="text-xs text-[var(--muted-foreground)]">Zabbix: 5/0,75 vs. Checkmk: 4/0,60 â†’ Differenz nur <strong>+0,15</strong></p>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+        <!-- Code Window -->
+        <div class="rounded-xl overflow-hidden border border-slate-800 bg-slate-900 flex flex-col">
+          <div class="bg-slate-950 px-4 py-2 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <span class="font-mono text-emerald-400">/usr/lib/check_mk_agent/local/active_tcp_connections.py</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800">Python 3</span>
           </div>
-          <div class="p-4 rounded-xl bg-orange-400/10 border border-orange-400/40">
-            <div class="flex items-center justify-between mb-1">
-              <span class="font-semibold text-sm text-[var(--foreground)]">ðŸ”§ Erweiterbarkeit &amp; Doku</span>
-              <span class="text-xs text-orange-400 font-bold">15% Gewicht</span>
+          <pre class="p-4 text-[11px] text-slate-300 font-mono overflow-x-auto leading-relaxed"><code>#!/usr/bin/env python3
+import subprocess, sys
+
+def get_tcp_connections():
+    out = subprocess.check_output(["ss", "-ant"], text=True)
+    count = sum(1 for line in out.splitlines() if "ESTAB" in line)
+    
+    warn, crit = 100, 200
+    status = 0
+    status_txt = "OK"
+    
+    if count >= crit:
+        status, status_txt = 2, "CRIT"
+    elif count >= warn:
+        status, status_txt = 1, "WARN"
+        
+    print(f'{status} "Active_TCP_Connections" '
+          f'connections={count};{warn};{crit} '
+          f'{status_txt} - {count} aktive TCP Verbindungen')
+
+if __name__ == "__main__":
+    get_tcp_connections()</code></pre>
+        </div>
+
+        <!-- Explanation & Protocol Details -->
+        <div class="glass-card rounded-xl p-5 border-slate-800 flex flex-col justify-between text-xs">
+          <div>
+            <h3 class="font-bold text-white text-sm mb-3">Funktionsweise des Checkmk-Local-Check-Protokolls</h3>
+            <p class="text-slate-300 leading-relaxed mb-3">
+              Checkmk verarbeitet Skriptausgaben ohne zusätzliche Treiber. Die Ausgabe folgt einer standardisierten Syntax:
+            </p>
+            <div class="p-3 rounded-lg bg-slate-950 font-mono text-[11px] text-emerald-300 border border-slate-800 mb-3">
+              &lt;STATUS&gt; "&lt;SERVICENAME&gt;" &lt;METRIKEN&gt; &lt;TEXT&gt;
             </div>
-            <p class="text-xs text-[var(--muted-foreground)]">Zabbix: 5/0,65 vs. Checkmk: 4/0,55 â†’ Differenz nur <strong>+0,10</strong></p>
+            <ul class="space-y-2 text-slate-400">
+              <li>🟢 <strong>Status 0 (OK):</strong> Bei weniger als 100 aktiven Verbindungen.</li>
+              <li>🟡 <strong>Status 1 (WARN):</strong> Ab 100 Verbindungen (hohe Last).</li>
+              <li>🔴 <strong>Status 2 (CRIT):</strong> Ab 200 Verbindungen (mögliche DoS-Attacke).</li>
+              <li>📈 <strong>Performance-Daten:</strong> Automatisches Zeichnen von historischen RRD-Graphen im Dashboard.</li>
+            </ul>
           </div>
-          <div class="p-4 rounded-xl bg-orange-400/10 border border-orange-400/40">
-            <div class="flex items-center justify-between mb-1">
-              <span class="font-semibold text-sm text-[var(--foreground)]">ðŸ’» OS-UnterstÃ¼tzung</span>
-              <span class="text-xs text-orange-400 font-bold">10% Gewicht</span>
-            </div>
-            <p class="text-xs text-[var(--muted-foreground)]">Zabbix: 5/0,50 vs. Checkmk: 4/0,40 â†’ Differenz nur <strong>+0,10</strong></p>
+
+          <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
+            ✓ Erfolgreich in der Auto-Discovery erkannt und als eigener Service eingepflegt.
           </div>
         </div>
-        <p class="mt-4 text-xs text-[var(--muted-foreground)] max-w-4xl">
-          ðŸ”‘ <strong>Fazit:</strong> Zabbix holte in 3 Kriterien insgesamt <strong>+0,35 Punkte</strong> â€“ aber Checkmk gewann allein durch Bedienbarkeit &amp; Dashboards <strong class="text-green-500">+0,55 Punkte</strong>. Der Vorsprung war damit klar und nachvollziehbar.
-        </p>
       </div>
     </div>
 
-    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 8: ENTSCHEIDUNG â•â•â•â•â•â•â•â•â•â• -->
-    <div class="slide flex-col items-center justify-center text-center px-10 py-16 min-h-full" id="slide-8">
-      <div class="text-6xl mb-6">âœ…</div>
-      <h2 class="text-3xl font-extrabold text-[var(--foreground)] mb-4">Entscheidung</h2>
-      <div class="p-6 rounded-2xl bg-green-500/10 border-2 border-green-500 max-w-2xl mb-8">
-        <p class="text-lg text-[var(--foreground)] leading-relaxed">
-          Die <strong class="text-green-500">Checkmk Raw Edition</strong> wird aufgrund der hervorragenden Bedienbarkeit, der integrierten Out-of-the-Box Dashboards und der zeitsparenden <strong>Auto-Discovery</strong> als LÃ¶sung ausgewÃ¤hlt.
-        </p>
+    <!-- ══════════════════ FOLIE 9: STÖRUNGSSIMULATION ══════════════════ -->
+    <div class="slide flex-col max-w-5xl w-full" id="slide-9">
+      <div class="mb-5">
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">Kapitel 08</span>
+        <h2 class="text-3xl font-extrabold text-white mt-1">Störungssimulation &amp; Validierung (M10)</h2>
+        <p class="text-slate-400 text-sm mt-1">4 reale Ausfallszenarien simuliert und Alarmauslösung protokolliert</p>
       </div>
-      <div class="grid gap-4 max-w-2xl w-full" style="grid-template-columns: repeat(auto-fit, minmax(180px,1fr));">
-        <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center">
-          <div class="text-2xl mb-2">ðŸ–¥ï¸</div>
-          <p class="text-sm font-semibold text-[var(--foreground)]">Beste Bedienbarkeit</p>
-          <p class="text-xs text-[var(--muted-foreground)]">Intuitive Web-GUI</p>
+
+      <!-- Störungs-Table -->
+      <div class="glass-card rounded-2xl overflow-hidden border-slate-800 mb-4">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-slate-900 text-slate-400 border-b border-slate-800 uppercase text-[10px] tracking-wider">
+            <tr>
+              <th class="p-3">#</th>
+              <th class="p-3">Szenario</th>
+              <th class="p-3">Auslösebefehl</th>
+              <th class="p-3">Erwarteter Zustand</th>
+              <th class="p-3">Tatsächliche Erkennung</th>
+              <th class="p-3 text-center">Reaktionszeit</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60">
+            <tr class="hover:bg-slate-800/30 transition">
+              <td class="p-3 font-bold text-emerald-400">1</td>
+              <td class="p-3 text-white font-medium">Apache Web-Ausfall</td>
+              <td class="p-3 font-mono text-slate-400">sudo systemctl stop apache2</td>
+              <td class="p-3 text-rose-400">HTTP ➔ CRIT</td>
+              <td class="p-3 text-rose-400 font-bold">CRIT (Connection refused)</td>
+              <td class="p-3 text-center font-mono font-bold text-emerald-400">47 Sek.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition">
+              <td class="p-3 font-bold text-emerald-400">2</td>
+              <td class="p-3 text-white font-medium">CPU-Volllast</td>
+              <td class="p-3 font-mono text-slate-400">stress --cpu 4 --timeout 180</td>
+              <td class="p-3 text-amber-400">CPU ➔ WARN / CRIT</td>
+              <td class="p-3 text-amber-400 font-bold">WARN (62s) ➔ CRIT (75s)</td>
+              <td class="p-3 text-center font-mono font-bold text-emerald-400">62 Sek.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition">
+              <td class="p-3 font-bold text-emerald-400">3</td>
+              <td class="p-3 text-white font-medium">Festplatte voll</td>
+              <td class="p-3 font-mono text-slate-400">dd if=/dev/zero of=/tmp/file</td>
+              <td class="p-3 text-rose-400">Disk ➔ CRIT</td>
+              <td class="p-3 text-rose-400 font-bold">CRIT (Belegung &gt; 95%)</td>
+              <td class="p-3 text-center font-mono font-bold text-emerald-400">60 Sek.</td>
+            </tr>
+            <tr class="hover:bg-slate-800/30 transition">
+              <td class="p-3 font-bold text-emerald-400">4</td>
+              <td class="p-3 text-white font-medium">Kompletter Host-Crash</td>
+              <td class="p-3 font-mono text-slate-400">VM Power Off (VirtualBox)</td>
+              <td class="p-3 text-rose-400">Host ➔ DOWN</td>
+              <td class="p-3 text-rose-400 font-bold">DOWN (ICMP Ping Fail)</td>
+              <td class="p-3 text-center font-mono font-bold text-emerald-400">127 Sek.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Outcome Banner -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+        <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
+          ⏱️ <strong>Durchschnittliche Erkennung:</strong> Alle kritischen Dienstausfälle wurden in unter <strong>65 Sekunden</strong> zuverlässig gemeldet.
         </div>
-        <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center">
-          <div class="text-2xl mb-2">ðŸ“Š</div>
-          <p class="text-sm font-semibold text-[var(--foreground)]">Dashboards inklusive</p>
-          <p class="text-xs text-[var(--muted-foreground)]">Out-of-the-Box</p>
-        </div>
-        <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center">
-          <div class="text-2xl mb-2">ðŸ”</div>
-          <p class="text-sm font-semibold text-[var(--foreground)]">Auto-Discovery</p>
-          <p class="text-xs text-[var(--muted-foreground)]">Zeitsparend</p>
-        </div>
-        <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center">
-          <div class="text-2xl mb-2">ðŸ’°</div>
-          <p class="text-sm font-semibold text-[var(--foreground)]">Kostenlos</p>
-          <p class="text-xs text-[var(--muted-foreground)]">Open Source</p>
+        <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
+          🔄 <strong>Automatische Entwarnung:</strong> Sobald der Dienst wieder startet, springt Checkmk ohne manuelles Zutun wieder auf <strong>OK (Grün)</strong>.
         </div>
       </div>
-      <p class="mt-8 text-sm text-[var(--muted-foreground)]">Grone Umschulungsteam | MÃ¼ller &amp; Partner GmbH | Oktober 2026</p>
     </div>
 
-  </div><!-- end slide container -->
+    <!-- ══════════════════ FOLIE 10: FAZIT & ROLLOUT ══════════════════ -->
+    <div class="slide flex-col items-center justify-center text-center max-w-4xl w-full py-6" id="slide-10">
+      <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl font-bold mb-4 shadow-inner">
+        ✓
+      </div>
 
-  <!-- NAVIGATION -->
-  <div class="flex items-center justify-between px-8 py-4 border-t border-[var(--border)] bg-[var(--sidebar)]">
-    <button id="prev-btn" onclick="changeSlide(-1)"
-      class="px-5 py-2 rounded-lg bg-[var(--accent)] text-[var(--foreground)] font-semibold text-sm disabled:opacity-40 hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)] transition-colors"
-      disabled>â† ZurÃ¼ck</button>
-    <div class="flex items-center gap-2">
-      <span id="slide-counter" class="text-sm text-[var(--muted-foreground)]">Folie 1 / 7</span>
-      <div class="flex gap-2 ml-4" id="dots"></div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-3">
+        Projektergebnis &amp; Handlungsempfehlung
+      </h2>
+
+      <p class="text-slate-400 text-base max-w-2xl mx-auto mb-8 font-light">
+        Der Proof of Concept hat alle Anforderungen zu 100% erfüllt. Es wird die uneingeschränkte Übernahme von <strong class="text-emerald-400 font-semibold">Checkmk Raw Edition</strong> in den Produktivbetrieb empfohlen.
+      </p>
+
+      <!-- 3-Phasen-Rollout Fahrplan -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-left w-full mb-8">
+        <div class="glass-card rounded-xl p-4 border-slate-800">
+          <div class="text-[10px] uppercase tracking-wider text-emerald-400 font-bold">Phase 1 (Woche 1–2)</div>
+          <div class="font-bold text-white text-sm mt-1">Pilotbetrieb</div>
+          <p class="text-slate-400 text-xs mt-1.5 leading-relaxed">
+            Installation auf dedizierter VM und Einbindung der 10 kritischsten Server (AD, DNS, ERP, File).
+          </p>
+        </div>
+
+        <div class="glass-card rounded-xl p-4 border-slate-800">
+          <div class="text-[10px] uppercase tracking-wider text-teal-400 font-bold">Phase 2 (Woche 3–4)</div>
+          <div class="font-bold text-white text-sm mt-1">Vollständiger Rollout</div>
+          <p class="text-slate-400 text-xs mt-1.5 leading-relaxed">
+            Erfassung aller Arbeitsplatz-PCs, NAS-Speicher und Konfiguration der E-Mail/SMS-Benachrichtigungsketten.
+          </p>
+        </div>
+
+        <div class="glass-card rounded-xl p-4 border-slate-800">
+          <div class="text-[10px] uppercase tracking-wider text-cyan-400 font-bold">Phase 3 (Monat 2)</div>
+          <div class="font-bold text-white text-sm mt-1">Erweiterung &amp; SNMP</div>
+          <p class="text-slate-400 text-xs mt-1.5 leading-relaxed">
+            Anbindung von Netzwerkswitches via SNMP, zentrales Log-Monitoring und Kapazitätsplanung.
+          </p>
+        </div>
+      </div>
+
+      <!-- Live-Demo Button -->
+      <div class="flex items-center gap-4 justify-center">
+        <a href="http://localhost:8080/cmk/" target="_blank" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/25 transition transform hover:-translate-y-0.5 flex items-center gap-2">
+          <span>🚀 Live-Dashboard öffnen</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+      </div>
+
+      <p class="text-slate-600 text-xs mt-8">
+        Vielen Dank für Ihre Aufmerksamkeit! Haben Sie Fragen zum Projekt?
+      </p>
     </div>
-    <button id="next-btn" onclick="changeSlide(1)"
-      class="px-5 py-2 rounded-lg bg-green-500 text-white font-semibold text-sm hover:bg-green-600 transition-colors">
-      Weiter â†’</button>
+
+  </main>
+
+  <!-- BOTTOM CONTROLS & SPEAKER HINTS -->
+  <footer class="border-t border-slate-800/80 bg-slate-950/80 px-6 py-3 flex items-center justify-between no-print z-40">
+    <div class="flex items-center gap-3">
+      <button id="prev-btn" onclick="changeSlide(-1)" class="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700/60 disabled:opacity-30 disabled:pointer-events-none transition">
+        ← Zurück
+      </button>
+      <button id="next-btn" onclick="changeSlide(1)" class="px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition shadow-sm">
+        Weiter →
+      </button>
+    </div>
+
+    <!-- Dots -->
+    <div class="hidden sm:flex items-center gap-1.5" id="slide-dots"></div>
+
+    <!-- Quick info -->
+    <div class="text-xs text-slate-500 hidden md:block">
+      Tipp: Drücke <kbd class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400">O</kbd> für Kachelübersicht
+    </div>
+  </footer>
+
+  <!-- MODAL: SLIDE GRID OVERVIEW (Press 'O') -->
+  <div id="overview-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 p-6 flex-col justify-center items-center overflow-y-auto no-print">
+    <div class="max-w-5xl w-full">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-bold text-white">Alle Folien im Überblick</h3>
+        <button onclick="toggleOverview()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">✕ Schließen (O)</button>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3" id="overview-grid"></div>
+    </div>
   </div>
-</div>
 
-<script>
-  const TOTAL = 8;
-  let current = 1;
+  <script>
+    const TOTAL_SLIDES = 10;
+    let currentSlide = 1;
 
-  const criteria = [
-    { name: 'Kosten / Lizenz',          weight: 10 },
-    { name: 'Bedienbarkeit & GUI',       weight: 20 },
-    { name: 'OS-UnterstÃ¼tzung',          weight: 10 },
-    { name: 'Netzwerkdienste',           weight: 15 },
-    { name: 'Alarmierung',               weight: 15 },
-    { name: 'Visualisierung / Dashboards', weight: 15 },
-    { name: 'Erweiterbarkeit & Doku',    weight: 15 },
-  ];
+    const slideTitles = [
+      "1. Titelfolie",
+      "2. Ausgangslage & Problem",
+      "3. Anforderungsanalyse (M01–M11)",
+      "4. Die 3 Kandidaten",
+      "5. Nutzwertmatrix",
+      "6. Warum Checkmk?",
+      "7. Testnetz & Topologie",
+      "8. Eigenentwicklung (TCP-Check)",
+      "9. Störungssimulation",
+      "10. Fazit & Rollout"
+    ];
 
-  const matrixData = [
-    { criterion:'Kosten / Lizenz',           weight:'10%', cmk:'5 / 0,50', zab:'5 / 0,50', nag:'5 / 0,50', best:'all' },
-    { criterion:'Bedienbarkeit & GUI',        weight:'20%', cmk:'5 / 1,00', zab:'3 / 0,60', nag:'2 / 0,40', best:'cmk' },
-    { criterion:'OS-UnterstÃ¼tzung',           weight:'10%', cmk:'4 / 0,40', zab:'5 / 0,50', nag:'4 / 0,40', best:'zab' },
-    { criterion:'Netzwerkdienste',            weight:'15%', cmk:'4 / 0,60', zab:'5 / 0,75', nag:'4 / 0,60', best:'zab' },
-    { criterion:'Alarmierung',               weight:'15%', cmk:'4 / 0,60', zab:'4 / 0,60', nag:'3 / 0,45', best:'cmk_zab' },
-    { criterion:'Visualisierung / Dashboards',weight:'15%', cmk:'5 / 0,75', zab:'4 / 0,60', nag:'2 / 0,30', best:'cmk' },
-    { criterion:'Erweiterbarkeit & Doku',    weight:'15%', cmk:'4 / 0,55', zab:'5 / 0,65', nag:'4 / 0,65', best:'zab_nag' },
-  ];
+    function updatePresentation() {
+      // Slides display
+      for (let i = 1; i <= TOTAL_SLIDES; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        if (slide) {
+          slide.classList.toggle('active', i === currentSlide);
+        }
+      }
 
-  // Build criteria bars (slide 4)
-  const criteriaContainer = document.getElementById('criteria-container');
-  criteria.forEach(c => {
-    criteriaContainer.innerHTML += `
-      <div class="flex items-center gap-4">
-        <span class="w-52 text-sm text-[var(--foreground)] shrink-0">${c.name}</span>
-        <div class="flex-1 bg-[var(--accent)] rounded-full h-5 relative">
-          <div class="bar-fill bg-green-500 h-5 rounded-full flex items-center justify-end pr-2" style="width:${c.weight * 5}%">
-          </div>
-        </div>
-        <span class="w-12 text-right text-sm font-bold text-green-500 shrink-0">${c.weight}%</span>
-      </div>`;
-  });
+      // Progress bar
+      const progressPercent = ((currentSlide) / TOTAL_SLIDES) * 100;
+      document.getElementById('progress-bar').style.width = `${progressPercent}%`;
 
-  // Build matrix (slide 5)
-  const matrixBody = document.getElementById('matrix-body');
-  matrixData.forEach((row, i) => {
-    const bg = i % 2 === 0 ? 'bg-[var(--card)]' : 'bg-[var(--background)]';
-    const cmkClass = row.best === 'cmk' || row.best === 'all' ? 'text-green-500 font-bold' : 'text-[var(--foreground)]';
-    const zabClass = row.best === 'zab' || row.best === 'all' || row.best === 'cmk_zab' || row.best === 'zab_nag' ? 'text-blue-400 font-bold' : 'text-[var(--foreground)]';
-    matrixBody.innerHTML += `
-      <tr class="criterion-row ${bg} border-b border-[var(--border)]">
-        <td class="p-3 text-[var(--foreground)]">${row.criterion}</td>
-        <td class="p-3 text-center text-[var(--muted-foreground)]">${row.weight}</td>
-        <td class="p-3 text-center ${cmkClass}">${row.cmk}</td>
-        <td class="p-3 text-center ${zabClass}">${row.zab}</td>
-        <td class="p-3 text-center text-[var(--muted-foreground)]">${row.nag}</td>
-      </tr>`;
-  });
+      // Badge
+      const numStr = currentSlide < 10 ? `0${currentSlide}` : `${currentSlide}`;
+      document.getElementById('slide-badge').textContent = `${numStr} / 10`;
 
-  // Build dots
-  const dotsEl = document.getElementById('dots');
-  for (let i = 1; i <= TOTAL; i++) {
-    dotsEl.innerHTML += `<button onclick="goToSlide(${i})" class="dot w-2.5 h-2.5 rounded-full border border-[var(--border)] transition-colors" id="dot-${i}"></button>`;
-  }
+      // Buttons
+      document.getElementById('prev-btn').disabled = (currentSlide === 1);
+      const nextBtn = document.getElementById('next-btn');
+      if (currentSlide === TOTAL_SLIDES) {
+        nextBtn.textContent = '✓ Ende';
+      } else {
+        nextBtn.textContent = 'Weiter →';
+      }
 
-  function updateUI() {
-    document.querySelectorAll('.slide').forEach((s, idx) => {
-      s.classList.toggle('active', idx + 1 === current);
-    });
-    document.getElementById('slide-counter').textContent = `Folie ${current} / ${TOTAL}`;
-    document.getElementById('prev-btn').disabled = current === 1;
-    document.getElementById('next-btn').disabled = current === TOTAL;
-    document.getElementById('next-btn').textContent = current === TOTAL ? 'âœ“ Ende' : 'Weiter â†’';
-    for (let i = 1; i <= TOTAL; i++) {
-      const dot = document.getElementById(`dot-${i}`);
-      if (dot) dot.style.background = i === current ? 'var(--primary)' : 'var(--accent)';
+      // Dots update
+      for (let i = 1; i <= TOTAL_SLIDES; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (dot) {
+          if (i === currentSlide) {
+            dot.className = "w-6 h-2 rounded-full bg-emerald-400 transition-all duration-300";
+          } else {
+            dot.className = "w-2 h-2 rounded-full bg-slate-700 hover:bg-slate-600 transition-all duration-300 cursor-pointer";
+          }
+        }
+      }
     }
-  }
 
-  function changeSlide(dir) {
-    const next = current + dir;
-    if (next >= 1 && next <= TOTAL) { current = next; updateUI(); }
-  }
+    function changeSlide(delta) {
+      const next = currentSlide + delta;
+      if (next >= 1 && next <= TOTAL_SLIDES) {
+        currentSlide = next;
+        updatePresentation();
+      }
+    }
 
-  function goToSlide(n) { current = n; updateUI(); }
+    function goToSlide(n) {
+      if (n >= 1 && n <= TOTAL_SLIDES) {
+        currentSlide = n;
+        updatePresentation();
+        const modal = document.getElementById('overview-modal');
+        if (modal.classList.contains('open')) {
+          toggleOverview();
+        }
+      }
+    }
 
-  // Keyboard navigation
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
-  });
+    // Build Dots
+    const dotsContainer = document.getElementById('slide-dots');
+    for (let i = 1; i <= TOTAL_SLIDES; i++) {
+      const dot = document.createElement('button');
+      dot.id = `dot-${i}`;
+      dot.title = slideTitles[i-1];
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    }
 
-  updateUI();
-</script>
+    // Build Overview Grid
+    const gridContainer = document.getElementById('overview-grid');
+    slideTitles.forEach((title, idx) => {
+      const card = document.createElement('div');
+      card.className = "overview-card glass-card p-3 rounded-xl border border-slate-800 cursor-pointer transition flex flex-col justify-between h-24";
+      card.onclick = () => goToSlide(idx + 1);
+      card.innerHTML = `
+        <span class="text-[10px] text-emerald-400 font-mono font-bold">Folie ${idx+1}</span>
+        <span class="text-xs font-semibold text-slate-200">${title.replace(/^[0-9]+\.\s*/, '')}</span>
+      `;
+      gridContainer.appendChild(card);
+    });
+
+    function toggleOverview() {
+      document.getElementById('overview-modal').classList.toggle('open');
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        document.body.className = "bg-slate-100 text-slate-900 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white transition-colors duration-300";
+        document.getElementById('theme-icon').textContent = "🌙";
+      } else {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        document.body.className = "bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white transition-colors duration-300";
+        document.getElementById('theme-icon').textContent = "☀️";
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'l') {
+        changeSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'h') {
+        changeSlide(-1);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === 'o' || e.key === 'O') {
+        toggleOverview();
+      } else if (e.key === 't' || e.key === 'T') {
+        toggleTheme();
+      } else if (e.key === 'Escape') {
+        const modal = document.getElementById('overview-modal');
+        if (modal.classList.contains('open')) toggleOverview();
+      }
+    });
+
+    // Touch Swipe
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, false);
+    document.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchEndX < touchStartX - 50) changeSlide(1);
+      if (touchEndX > touchStartX + 50) changeSlide(-1);
+    }, false);
+
+    // Initial render
+    updatePresentation();
+  </script>
 </body>
 </html>
-
