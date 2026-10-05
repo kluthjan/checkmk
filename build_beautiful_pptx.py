@@ -41,7 +41,7 @@ def create_beautiful_presentation(pptx_path):
         # Title
         txBox = slide.shapes.add_textbox(Inches(0.5), Inches(0.4), Inches(12), Inches(1))
         tf = txBox.text_frame
-        p = tf.add_paragraph()
+        p = tf.paragraphs[0]
         p.text = title_text
         p.font.size = Pt(44)
         p.font.bold = True
@@ -67,7 +67,7 @@ def create_beautiful_presentation(pptx_path):
     # Main Title
     txBox = slide.shapes.add_textbox(Inches(1.5), Inches(2), Inches(10), Inches(1.5))
     tf = txBox.text_frame
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "IT-Monitoring mit Checkmk"
     p.font.size = Pt(64)
     p.font.bold = True
@@ -76,7 +76,7 @@ def create_beautiful_presentation(pptx_path):
     # Subtitle
     txBox = slide.shapes.add_textbox(Inches(1.5), Inches(3.2), Inches(10), Inches(1))
     tf = txBox.text_frame
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Proof of Concept für Müller & Partner GmbH"
     p.font.size = Pt(32)
     p.font.color.rgb = ACCENT_COLOR
@@ -91,7 +91,7 @@ def create_beautiful_presentation(pptx_path):
     
     txBox = slide.shapes.add_textbox(Inches(1.7), Inches(5.6), Inches(10.1), Inches(1))
     tf = txBox.text_frame
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Projektteam:\nJan Kluth | Marion Ballcke | Mathias Vorrau | Marco Schmidt | Robert Ortmann"
     p.font.size = Pt(22)
     p.font.color.rgb = TEXT_LIGHT
@@ -114,7 +114,7 @@ def create_beautiful_presentation(pptx_path):
     txBox = slide.shapes.add_textbox(Inches(0.8), Inches(1.8), Inches(5.3), Inches(4.5))
     tf = txBox.text_frame
     tf.word_wrap = True
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Bisherige Situation"
     p.font.size = Pt(32)
     p.font.bold = True
@@ -142,7 +142,7 @@ def create_beautiful_presentation(pptx_path):
     txBox = slide.shapes.add_textbox(Inches(7.2), Inches(1.8), Inches(5.3), Inches(4.5))
     tf = txBox.text_frame
     tf.word_wrap = True
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Projektziele"
     p.font.size = Pt(32)
     p.font.bold = True
@@ -171,7 +171,7 @@ def create_beautiful_presentation(pptx_path):
     # Top intro text
     txBox = slide.shapes.add_textbox(Inches(0.5), Inches(1.5), Inches(12), Inches(0.5))
     tf = txBox.text_frame
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Wir haben drei marktführende Open-Source Lösungen evaluiert:"
     p.font.size = Pt(28)
     p.font.color.rgb = TEXT_LIGHT
@@ -199,7 +199,7 @@ def create_beautiful_presentation(pptx_path):
         txBox = slide.shapes.add_textbox(x+Inches(0.2), y+Inches(0.5), w-Inches(0.4), Inches(2))
         tf = txBox.text_frame
         tf.word_wrap = True
-        p = tf.add_paragraph()
+        p = tf.paragraphs[0]
         p.text = name
         p.font.size = Pt(36)
         p.font.bold = True
@@ -217,7 +217,7 @@ def create_beautiful_presentation(pptx_path):
     txBox = slide.shapes.add_textbox(Inches(0.5), Inches(5.8), Inches(12), Inches(1))
     tf = txBox.text_frame
     tf.word_wrap = True
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Entscheidung: Checkmk aufgrund hervorragender Bedienbarkeit (höchste Gewichtung: 20%), Out-of-the-Box Dashboards und zeitsparender Auto-Discovery."
     p.font.size = Pt(24)
     p.font.bold = True
@@ -247,7 +247,7 @@ def create_beautiful_presentation(pptx_path):
         txBox = slide.shapes.add_textbox(x, y+Inches(0.2), Inches(3.3), Inches(2))
         tf = txBox.text_frame
         tf.word_wrap = True
-        p = tf.add_paragraph()
+        p = tf.paragraphs[0]
         p.text = title
         p.font.size = Pt(28)
         p.font.bold = True
@@ -275,7 +275,7 @@ def create_beautiful_presentation(pptx_path):
     # Network details
     txBox = slide.shapes.add_textbox(Inches(0.5), Inches(5.5), Inches(12), Inches(1.5))
     tf = txBox.text_frame
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Netzwerk: VirtualBox Host-Only Adapter (192.168.56.0/24)"
     p.font.size = Pt(24)
     p.font.color.rgb = TEXT_LIGHT
@@ -301,7 +301,7 @@ def create_beautiful_presentation(pptx_path):
     tf = txBox.text_frame
     tf.word_wrap = True
     
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Automatisierung & Dienste"
     p.font.size = Pt(32)
     p.font.bold = True
@@ -346,7 +346,7 @@ def create_beautiful_presentation(pptx_path):
 
     txBox = slide.shapes.add_textbox(Inches(0.5), Inches(1.3), Inches(12), Inches(0.5))
     tf = txBox.text_frame
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Vier praxisnahe Szenarien erfolgreich getestet:"
     p.font.size = Pt(26)
     p.font.color.rgb = TEXT_LIGHT
@@ -373,21 +373,24 @@ def create_beautiful_presentation(pptx_path):
         circle.line.color.rgb = ACCENT_COLOR
         
         tx = slide.shapes.add_textbox(Inches(1.6), Inches(y_pos+0.1), Inches(3.5), Inches(0.9))
-        tx.text_frame.add_paragraph().text = name
-        tx.text_frame.paragraphs[0].font.size = Pt(28)
-        tx.text_frame.paragraphs[0].font.bold = True
-        tx.text_frame.paragraphs[0].font.color.rgb = TEXT_LIGHT
+        p = tx.text_frame.paragraphs[0]
+        p.text = name
+        p.font.size = Pt(28)
+        p.font.bold = True
+        p.font.color.rgb = TEXT_LIGHT
         
         tx2 = slide.shapes.add_textbox(Inches(5.0), Inches(y_pos+0.1), Inches(4.0), Inches(0.9))
-        tx2.text_frame.add_paragraph().text = action
-        tx2.text_frame.paragraphs[0].font.size = Pt(22)
-        tx2.text_frame.paragraphs[0].font.color.rgb = TEXT_MUTED
+        p2 = tx2.text_frame.paragraphs[0]
+        p2.text = action
+        p2.font.size = Pt(24)
+        p2.font.color.rgb = TEXT_MUTED
         
         tx3 = slide.shapes.add_textbox(Inches(9.0), Inches(y_pos+0.1), Inches(3.5), Inches(0.9))
-        tx3.text_frame.add_paragraph().text = result
-        tx3.text_frame.paragraphs[0].font.size = Pt(24)
-        tx3.text_frame.paragraphs[0].font.bold = True
-        tx3.text_frame.paragraphs[0].font.color.rgb = ACCENT_COLOR
+        p3 = tx3.text_frame.paragraphs[0]
+        p3.text = result
+        p3.font.size = Pt(26)
+        p3.font.bold = True
+        p3.font.color.rgb = ACCENT_COLOR
         
         y_pos += 1.3
 
@@ -407,7 +410,7 @@ def create_beautiful_presentation(pptx_path):
     tf = txBox.text_frame
     tf.word_wrap = True
     
-    p = tf.add_paragraph()
+    p = tf.paragraphs[0]
     p.text = "Ergebnisse des Proof of Concept"
     p.font.size = Pt(32)
     p.font.bold = True
