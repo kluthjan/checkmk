@@ -1,0 +1,452 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nutzwertanalyse â€“ IT-Monitoring</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .slide { display: none; }
+    .slide.active { display: flex; }
+    .bar-fill { transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+    .score-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .score-card:hover { transform: translateY(-4px); }
+    .winner-glow { box-shadow: 0 0 0 3px #22c55e44, 0 8px 32px #22c55e22; }
+    .dot { transition: background 0.2s; }
+    .criterion-row:hover td { background: var(--accent); }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased" style="min-height:100vh;">
+
+<!-- PRESENTATION WRAPPER -->
+<div class="relative min-h-screen flex flex-col" style="min-height:100vh;">
+
+  <!-- HEADER BAR -->
+  <div class="flex items-center justify-between px-8 py-4 border-b border-[var(--border)] bg-[var(--sidebar)]">
+    <div>
+      <span class="text-xs font-semibold text-[var(--muted-foreground)] tracking-widest uppercase">MÃ¼ller &amp; Partner GmbH</span>
+      <h1 class="text-lg font-bold text-[var(--foreground)]">Nutzwertanalyse â€“ Zentrales IT-Monitoring</h1>
+    </div>
+    <div class="flex items-center gap-2 text-xs text-[var(--muted-foreground)]">
+      <span>Oktober 2026</span>
+      <span class="px-2 py-0.5 rounded-full bg-[var(--accent)] font-semibold">v1.0</span>
+    </div>
+  </div>
+
+  <!-- SLIDE CONTAINER -->
+  <div class="flex-1 relative overflow-hidden">
+
+    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 1: TITLE â•â•â•â•â•â•â•â•â•â• -->
+    <div class="slide active flex-col items-center justify-center text-center px-8 py-16 min-h-full" id="slide-1">
+      <div class="mb-6">
+        <span class="inline-block px-4 py-1 rounded-full text-sm font-semibold bg-green-500 text-white mb-4">POC â€“ 3 Projekttage</span>
+        <h2 class="text-4xl font-extrabold text-[var(--foreground)] leading-tight mb-4">
+          Warum wir uns fÃ¼r<br/>
+          <span class="text-green-500">Checkmk Raw Edition</span><br/>
+          entschieden haben
+        </h2>
+        <p class="text-[var(--muted-foreground)] text-lg max-w-xl mx-auto">
+          Systematische Bewertung von drei fÃ¼hrenden Open-Source-Monitoring-LÃ¶sungen mittels gewichteter Nutzwertanalyse
+        </p>
+      </div>
+      <div class="flex gap-8 mt-8 justify-center flex-wrap">
+        <div class="flex flex-col items-center gap-2 p-5 rounded-xl bg-[var(--card)] border border-[var(--border)] w-36">
+          <span class="text-3xl">ðŸ†</span>
+          <span class="font-bold text-green-500">Checkmk</span>
+          <span class="text-xs text-[var(--muted-foreground)]">Raw Edition</span>
+        </div>
+        <div class="flex flex-col items-center gap-2 p-5 rounded-xl bg-[var(--card)] border border-[var(--border)] w-36">
+          <span class="text-3xl">ðŸ¥ˆ</span>
+          <span class="font-bold text-[var(--foreground)]">Zabbix</span>
+          <span class="text-xs text-[var(--muted-foreground)]">Community</span>
+        </div>
+        <div class="flex flex-col items-center gap-2 p-5 rounded-xl bg-[var(--card)] border border-[var(--border)] w-36">
+          <span class="text-3xl">ðŸ¥‰</span>
+          <span class="font-bold text-[var(--foreground)]">Nagios Core</span>
+          <span class="text-xs text-[var(--muted-foreground)]">Open Source</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 2: AUSGANGSLAGE â•â•â•â•â•â•â•â•â•â• -->
+    <div class="slide flex-col justify-center px-10 py-12 min-h-full" id="slide-2">
+      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Ausgangslage &amp; Problemstellung</h2>
+      <p class="text-[var(--muted-foreground)] mb-8 text-sm">Warum musste ein Monitoring-System eingefÃ¼hrt werden?</p>
+      <div class="grid grid-cols-1 gap-4 max-w-3xl" style="grid-template-columns: repeat(auto-fit, minmax(260px,1fr));">
+        <div class="p-5 rounded-xl bg-[var(--card)] border border-red-400/40">
+          <div class="text-2xl mb-2">â°</div>
+          <h3 class="font-semibold text-[var(--foreground)] mb-1">VerzÃ¶gerte StÃ¶rungsmeldungen</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">Manuelle Ãœberwachung fÃ¼hrte zu langen Reaktionszeiten bei AusfÃ¤llen</p>
+        </div>
+        <div class="p-5 rounded-xl bg-[var(--card)] border border-orange-400/40">
+          <div class="text-2xl mb-2">ðŸŒ</div>
+          <h3 class="font-semibold text-[var(--foreground)] mb-1">Unbemerkte NetzwerkausfÃ¤lle</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">DNS/DHCP-Dienste konnten unbemerkt ausfallen</p>
+        </div>
+        <div class="p-5 rounded-xl bg-[var(--card)] border border-yellow-400/40">
+          <div class="text-2xl mb-2">ðŸ’¾</div>
+          <h3 class="font-semibold text-[var(--foreground)] mb-1">FestplattenengpÃ¤sse</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">Potenzielle Datenverluste durch unentdeckten Speicherplatzmangel</p>
+        </div>
+        <div class="p-5 rounded-xl bg-[var(--card)] border border-blue-400/40">
+          <div class="text-2xl mb-2">ðŸ“ˆ</div>
+          <h3 class="font-semibold text-[var(--foreground)] mb-1">Wachsende Infrastruktur</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">Mehrere Linux-Server &amp; Clients â€“ manuelle Kontrolle nicht mehr skalierbar</p>
+        </div>
+      </div>
+      <div class="mt-8 p-4 rounded-xl bg-green-500/10 border border-green-500/30 max-w-3xl">
+        <p class="text-sm text-[var(--foreground)]"><strong>ðŸŽ¯ Projektziel:</strong> Proaktive StÃ¶rungserkennung <em>vor</em> BeeintrÃ¤chtigung der Endanwender durch ein zentrales Open-Source-Monitoring-System</p>
+      </div>
+    </div>
+
+    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 3: KANDIDATEN â•â•â•â•â•â•â•â•â•â• -->
+    <div class="slide flex-col justify-center px-10 py-12 min-h-full" id="slide-3">
+      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Die drei Kandidaten</h2>
+      <p class="text-[var(--muted-foreground)] mb-8 text-sm">Evaluierte marktfÃ¼hrende Open-Source-Monitoring-LÃ¶sungen</p>
+      <div class="grid gap-5 max-w-4xl" style="grid-template-columns: repeat(auto-fit, minmax(280px,1fr));">
+        <!-- Checkmk -->
+        <div class="p-6 rounded-xl bg-[var(--card)] border-2 border-green-500 winner-glow">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xl font-extrabold text-green-500">Checkmk Raw</span>
+            <span class="px-2 py-0.5 rounded-full bg-green-500/20 text-green-500 text-xs font-bold">âœ“ GewÃ¤hlt</span>
+          </div>
+          <ul class="space-y-2 text-sm text-[var(--foreground)]">
+            <li>âœ… Intuitive Web-GUI (WATO)</li>
+            <li>âœ… Auto-Discovery (automatisch)</li>
+            <li>âœ… Agenten fÃ¼r Linux &amp; Windows</li>
+            <li>âœ… Dashboards Out-of-the-Box</li>
+            <li>âœ… Keine externe Datenbank nÃ¶tig</li>
+          </ul>
+        </div>
+        <!-- Zabbix -->
+        <div class="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xl font-extrabold text-[var(--foreground)]">Zabbix</span>
+            <span class="px-2 py-0.5 rounded-full bg-[var(--accent)] text-[var(--muted-foreground)] text-xs font-bold">Rang 2</span>
+          </div>
+          <ul class="space-y-2 text-sm text-[var(--foreground)]">
+            <li>âœ… LeistungsfÃ¤hig &amp; skalierbar</li>
+            <li>âœ… Flexible Templates/Trigger</li>
+            <li>âš ï¸ HÃ¶herer Einarbeitungsaufwand</li>
+            <li>âš ï¸ Externe Datenbank erforderlich</li>
+            <li>âš ï¸ Komplexere Ersteinrichtung</li>
+          </ul>
+        </div>
+        <!-- Nagios -->
+        <div class="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)]">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xl font-extrabold text-[var(--foreground)]">Nagios Core</span>
+            <span class="px-2 py-0.5 rounded-full bg-[var(--accent)] text-[var(--muted-foreground)] text-xs font-bold">Rang 3</span>
+          </div>
+          <ul class="space-y-2 text-sm text-[var(--foreground)]">
+            <li>âœ… Klassischer Standard</li>
+            <li>âœ… Sehr ressourcenschonend</li>
+            <li>âŒ Veraltete BenutzeroberflÃ¤che</li>
+            <li>âŒ Rein dateibasierte Konfiguration</li>
+            <li>âŒ Keine integrierten Dashboards</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 4: KRITERIEN â•â•â•â•â•â•â•â•â•â• -->
+    <div class="slide flex-col justify-center px-10 py-10 min-h-full" id="slide-4">
+      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Bewertungskriterien &amp; Gewichtung</h2>
+      <p class="text-[var(--muted-foreground)] mb-6 text-sm">7 Kriterien â€“ gewichtet nach Projektrelevanz (Summe: 100%)</p>
+      <div class="max-w-3xl w-full space-y-3">
+        <!-- Criteria bars -->
+        <div id="criteria-container" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 5: NUTZWERTMATRIX â•â•â•â•â•â•â•â•â•â• -->
+    <div class="slide flex-col justify-center px-6 py-8 min-h-full" id="slide-5">
+      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Nutzwertmatrix â€“ Gewichtete Bewertung</h2>
+      <p class="text-[var(--muted-foreground)] mb-5 text-sm">Bewertung 1â€“5 Ã— Gewichtung = Nutzwert je Kriterium</p>
+      <div class="overflow-x-auto max-w-full">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-[var(--accent)]">
+              <th class="text-left p-3 rounded-tl-lg text-[var(--foreground)] font-semibold">Kriterium</th>
+              <th class="p-3 text-center text-[var(--muted-foreground)] font-semibold">Gewicht</th>
+              <th class="p-3 text-center text-green-500 font-bold">Checkmk Raw</th>
+              <th class="p-3 text-center text-[var(--foreground)] font-semibold">Zabbix</th>
+              <th class="p-3 text-center text-[var(--muted-foreground)] font-semibold rounded-tr-lg">Nagios Core</th>
+            </tr>
+          </thead>
+          <tbody id="matrix-body">
+          </tbody>
+          <tfoot>
+            <tr class="border-t-2 border-[var(--border)] bg-[var(--accent)] font-bold">
+              <td class="p-3 rounded-bl-lg text-[var(--foreground)]">Gesamtergebnis</td>
+              <td class="p-3 text-center text-[var(--muted-foreground)]">100%</td>
+              <td class="p-3 text-center text-green-500 text-base">4,40 ðŸ†</td>
+              <td class="p-3 text-center text-[var(--foreground)]">4,20</td>
+              <td class="p-3 text-center text-[var(--muted-foreground)] rounded-br-lg">3,30</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 6: ERGEBNIS VISUALISIERUNG â•â•â•â•â•â•â•â•â•â• -->
+    <div class="slide flex-col justify-center px-10 py-12 min-h-full" id="slide-6">
+      <h2 class="text-2xl font-bold mb-2 text-[var(--foreground)]">Ergebnis auf einen Blick</h2>
+      <p class="text-[var(--muted-foreground)] mb-8 text-sm">Gesamtpunktzahl (max. 5,00 Punkte)</p>
+      <div class="flex flex-col gap-6 max-w-2xl w-full">
+        <!-- Checkmk -->
+        <div class="score-card p-5 rounded-xl bg-[var(--card)] border-2 border-green-500 winner-glow">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">ðŸ†</span>
+              <div>
+                <span class="font-extrabold text-lg text-green-500">Checkmk Raw Edition</span>
+                <span class="ml-2 text-xs px-2 py-0.5 bg-green-500/20 text-green-500 rounded-full font-bold">Rang 1 â€“ AUSGEWÃ„HLT</span>
+              </div>
+            </div>
+            <span class="text-2xl font-extrabold text-green-500">4,40</span>
+          </div>
+          <div class="w-full bg-[var(--accent)] rounded-full h-4">
+            <div class="bar-fill bg-green-500 h-4 rounded-full" style="width:88%"></div>
+          </div>
+        </div>
+        <!-- Zabbix -->
+        <div class="score-card p-5 rounded-xl bg-[var(--card)] border border-[var(--border)]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">ðŸ¥ˆ</span>
+              <span class="font-bold text-lg text-[var(--foreground)]">Zabbix</span>
+            </div>
+            <span class="text-2xl font-bold text-[var(--foreground)]">4,20</span>
+          </div>
+          <div class="w-full bg-[var(--accent)] rounded-full h-4">
+            <div class="bar-fill bg-blue-400 h-4 rounded-full" style="width:84%"></div>
+          </div>
+        </div>
+        <!-- Nagios -->
+        <div class="score-card p-5 rounded-xl bg-[var(--card)] border border-[var(--border)]">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">ðŸ¥‰</span>
+              <span class="font-bold text-lg text-[var(--foreground)]">Nagios Core</span>
+            </div>
+            <span class="text-2xl font-bold text-[var(--muted-foreground)]">3,30</span>
+          </div>
+          <div class="w-full bg-[var(--accent)] rounded-full h-4">
+            <div class="bar-fill bg-gray-400 h-4 rounded-full" style="width:66%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 7: AUSSCHLAGGEBENDE KRITERIEN â•â•â•â•â•â•â•â•â•â• -->
+    <div class="slide flex-col justify-center px-8 py-10 min-h-full" id="slide-7">
+      <h2 class="text-2xl font-bold mb-1 text-[var(--foreground)]">Ausschlaggebende Kriterien</h2>
+      <p class="text-[var(--muted-foreground)] mb-6 text-sm">Warum Checkmk trotz SchwÃ¤chen in 2 Kriterien gewonnen hat</p>
+
+      <!-- TOP 2 DECISIVE - Checkmk winner -->
+      <div class="mb-4">
+        <p class="text-xs font-bold tracking-widest uppercase text-green-500 mb-3">âœ… Entscheidend fÃ¼r Checkmk</p>
+        <div class="grid gap-3 max-w-4xl" style="grid-template-columns: repeat(auto-fit, minmax(300px,1fr));">
+          <div class="p-4 rounded-xl bg-green-500/10 border-2 border-green-500">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-[var(--foreground)]">ðŸ–¥ï¸ Bedienbarkeit &amp; GUI</span>
+              <span class="text-xs px-2 py-0.5 bg-green-500 text-white rounded-full font-bold">20% Gewicht</span>
+            </div>
+            <div class="flex gap-3 text-sm mb-2">
+              <span class="text-green-500 font-bold">Checkmk: 5 â†’ 1,00</span>
+              <span class="text-[var(--muted-foreground)]">Zabbix: 3 â†’ 0,60</span>
+              <span class="text-[var(--muted-foreground)]">Nagios: 2 â†’ 0,40</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">HÃ¶chstes Gewicht (20%) + maximale Punktzahl (5). Allein dieses Kriterium brachte Checkmk <strong class="text-green-500">+0,40 Punkte</strong> Vorsprung auf Zabbix â€“ der grÃ¶ÃŸte Einzelunterschied im gesamten Vergleich.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-green-500/10 border-2 border-green-500">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-bold text-[var(--foreground)]">ðŸ“Š Visualisierung / Dashboards</span>
+              <span class="text-xs px-2 py-0.5 bg-green-500 text-white rounded-full font-bold">15% Gewicht</span>
+            </div>
+            <div class="flex gap-3 text-sm mb-2">
+              <span class="text-green-500 font-bold">Checkmk: 5 â†’ 0,75</span>
+              <span class="text-[var(--muted-foreground)]">Zabbix: 4 â†’ 0,60</span>
+              <span class="text-[var(--muted-foreground)]">Nagios: 2 â†’ 0,30</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">Out-of-the-Box Dashboards ohne Zusatzkonfiguration â€“ besonders wichtig fÃ¼r ein 3-Tage-POC. Checkmk liefert sofort nutzbare Ãœbersichten, Nagios hat <strong class="text-red-400">gar keine</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- WHERE CHECKMK LOST -->
+      <div>
+        <p class="text-xs font-bold tracking-widest uppercase text-orange-400 mb-3">âš ï¸ Kriterien mit Zabbix-Vorteil â€“ aber zu wenig Gewicht</p>
+        <div class="grid gap-3 max-w-4xl" style="grid-template-columns: repeat(auto-fit, minmax(280px,1fr));">
+          <div class="p-4 rounded-xl bg-orange-400/10 border border-orange-400/40">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-semibold text-sm text-[var(--foreground)]">ðŸŒ Netzwerkdienste</span>
+              <span class="text-xs text-orange-400 font-bold">15% Gewicht</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">Zabbix: 5/0,75 vs. Checkmk: 4/0,60 â†’ Differenz nur <strong>+0,15</strong></p>
+          </div>
+          <div class="p-4 rounded-xl bg-orange-400/10 border border-orange-400/40">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-semibold text-sm text-[var(--foreground)]">ðŸ”§ Erweiterbarkeit &amp; Doku</span>
+              <span class="text-xs text-orange-400 font-bold">15% Gewicht</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">Zabbix: 5/0,65 vs. Checkmk: 4/0,55 â†’ Differenz nur <strong>+0,10</strong></p>
+          </div>
+          <div class="p-4 rounded-xl bg-orange-400/10 border border-orange-400/40">
+            <div class="flex items-center justify-between mb-1">
+              <span class="font-semibold text-sm text-[var(--foreground)]">ðŸ’» OS-UnterstÃ¼tzung</span>
+              <span class="text-xs text-orange-400 font-bold">10% Gewicht</span>
+            </div>
+            <p class="text-xs text-[var(--muted-foreground)]">Zabbix: 5/0,50 vs. Checkmk: 4/0,40 â†’ Differenz nur <strong>+0,10</strong></p>
+          </div>
+        </div>
+        <p class="mt-4 text-xs text-[var(--muted-foreground)] max-w-4xl">
+          ðŸ”‘ <strong>Fazit:</strong> Zabbix holte in 3 Kriterien insgesamt <strong>+0,35 Punkte</strong> â€“ aber Checkmk gewann allein durch Bedienbarkeit &amp; Dashboards <strong class="text-green-500">+0,55 Punkte</strong>. Der Vorsprung war damit klar und nachvollziehbar.
+        </p>
+      </div>
+    </div>
+
+    <!-- â•â•â•â•â•â•â•â•â•â• SLIDE 8: ENTSCHEIDUNG â•â•â•â•â•â•â•â•â•â• -->
+    <div class="slide flex-col items-center justify-center text-center px-10 py-16 min-h-full" id="slide-8">
+      <div class="text-6xl mb-6">âœ…</div>
+      <h2 class="text-3xl font-extrabold text-[var(--foreground)] mb-4">Entscheidung</h2>
+      <div class="p-6 rounded-2xl bg-green-500/10 border-2 border-green-500 max-w-2xl mb-8">
+        <p class="text-lg text-[var(--foreground)] leading-relaxed">
+          Die <strong class="text-green-500">Checkmk Raw Edition</strong> wird aufgrund der hervorragenden Bedienbarkeit, der integrierten Out-of-the-Box Dashboards und der zeitsparenden <strong>Auto-Discovery</strong> als LÃ¶sung ausgewÃ¤hlt.
+        </p>
+      </div>
+      <div class="grid gap-4 max-w-2xl w-full" style="grid-template-columns: repeat(auto-fit, minmax(180px,1fr));">
+        <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center">
+          <div class="text-2xl mb-2">ðŸ–¥ï¸</div>
+          <p class="text-sm font-semibold text-[var(--foreground)]">Beste Bedienbarkeit</p>
+          <p class="text-xs text-[var(--muted-foreground)]">Intuitive Web-GUI</p>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center">
+          <div class="text-2xl mb-2">ðŸ“Š</div>
+          <p class="text-sm font-semibold text-[var(--foreground)]">Dashboards inklusive</p>
+          <p class="text-xs text-[var(--muted-foreground)]">Out-of-the-Box</p>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center">
+          <div class="text-2xl mb-2">ðŸ”</div>
+          <p class="text-sm font-semibold text-[var(--foreground)]">Auto-Discovery</p>
+          <p class="text-xs text-[var(--muted-foreground)]">Zeitsparend</p>
+        </div>
+        <div class="p-4 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center">
+          <div class="text-2xl mb-2">ðŸ’°</div>
+          <p class="text-sm font-semibold text-[var(--foreground)]">Kostenlos</p>
+          <p class="text-xs text-[var(--muted-foreground)]">Open Source</p>
+        </div>
+      </div>
+      <p class="mt-8 text-sm text-[var(--muted-foreground)]">Grone Umschulungsteam | MÃ¼ller &amp; Partner GmbH | Oktober 2026</p>
+    </div>
+
+  </div><!-- end slide container -->
+
+  <!-- NAVIGATION -->
+  <div class="flex items-center justify-between px-8 py-4 border-t border-[var(--border)] bg-[var(--sidebar)]">
+    <button id="prev-btn" onclick="changeSlide(-1)"
+      class="px-5 py-2 rounded-lg bg-[var(--accent)] text-[var(--foreground)] font-semibold text-sm disabled:opacity-40 hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)] transition-colors"
+      disabled>â† ZurÃ¼ck</button>
+    <div class="flex items-center gap-2">
+      <span id="slide-counter" class="text-sm text-[var(--muted-foreground)]">Folie 1 / 7</span>
+      <div class="flex gap-2 ml-4" id="dots"></div>
+    </div>
+    <button id="next-btn" onclick="changeSlide(1)"
+      class="px-5 py-2 rounded-lg bg-green-500 text-white font-semibold text-sm hover:bg-green-600 transition-colors">
+      Weiter â†’</button>
+  </div>
+</div>
+
+<script>
+  const TOTAL = 8;
+  let current = 1;
+
+  const criteria = [
+    { name: 'Kosten / Lizenz',          weight: 10 },
+    { name: 'Bedienbarkeit & GUI',       weight: 20 },
+    { name: 'OS-UnterstÃ¼tzung',          weight: 10 },
+    { name: 'Netzwerkdienste',           weight: 15 },
+    { name: 'Alarmierung',               weight: 15 },
+    { name: 'Visualisierung / Dashboards', weight: 15 },
+    { name: 'Erweiterbarkeit & Doku',    weight: 15 },
+  ];
+
+  const matrixData = [
+    { criterion:'Kosten / Lizenz',           weight:'10%', cmk:'5 / 0,50', zab:'5 / 0,50', nag:'5 / 0,50', best:'all' },
+    { criterion:'Bedienbarkeit & GUI',        weight:'20%', cmk:'5 / 1,00', zab:'3 / 0,60', nag:'2 / 0,40', best:'cmk' },
+    { criterion:'OS-UnterstÃ¼tzung',           weight:'10%', cmk:'4 / 0,40', zab:'5 / 0,50', nag:'4 / 0,40', best:'zab' },
+    { criterion:'Netzwerkdienste',            weight:'15%', cmk:'4 / 0,60', zab:'5 / 0,75', nag:'4 / 0,60', best:'zab' },
+    { criterion:'Alarmierung',               weight:'15%', cmk:'4 / 0,60', zab:'4 / 0,60', nag:'3 / 0,45', best:'cmk_zab' },
+    { criterion:'Visualisierung / Dashboards',weight:'15%', cmk:'5 / 0,75', zab:'4 / 0,60', nag:'2 / 0,30', best:'cmk' },
+    { criterion:'Erweiterbarkeit & Doku',    weight:'15%', cmk:'4 / 0,55', zab:'5 / 0,65', nag:'4 / 0,65', best:'zab_nag' },
+  ];
+
+  // Build criteria bars (slide 4)
+  const criteriaContainer = document.getElementById('criteria-container');
+  criteria.forEach(c => {
+    criteriaContainer.innerHTML += `
+      <div class="flex items-center gap-4">
+        <span class="w-52 text-sm text-[var(--foreground)] shrink-0">${c.name}</span>
+        <div class="flex-1 bg-[var(--accent)] rounded-full h-5 relative">
+          <div class="bar-fill bg-green-500 h-5 rounded-full flex items-center justify-end pr-2" style="width:${c.weight * 5}%">
+          </div>
+        </div>
+        <span class="w-12 text-right text-sm font-bold text-green-500 shrink-0">${c.weight}%</span>
+      </div>`;
+  });
+
+  // Build matrix (slide 5)
+  const matrixBody = document.getElementById('matrix-body');
+  matrixData.forEach((row, i) => {
+    const bg = i % 2 === 0 ? 'bg-[var(--card)]' : 'bg-[var(--background)]';
+    const cmkClass = row.best === 'cmk' || row.best === 'all' ? 'text-green-500 font-bold' : 'text-[var(--foreground)]';
+    const zabClass = row.best === 'zab' || row.best === 'all' || row.best === 'cmk_zab' || row.best === 'zab_nag' ? 'text-blue-400 font-bold' : 'text-[var(--foreground)]';
+    matrixBody.innerHTML += `
+      <tr class="criterion-row ${bg} border-b border-[var(--border)]">
+        <td class="p-3 text-[var(--foreground)]">${row.criterion}</td>
+        <td class="p-3 text-center text-[var(--muted-foreground)]">${row.weight}</td>
+        <td class="p-3 text-center ${cmkClass}">${row.cmk}</td>
+        <td class="p-3 text-center ${zabClass}">${row.zab}</td>
+        <td class="p-3 text-center text-[var(--muted-foreground)]">${row.nag}</td>
+      </tr>`;
+  });
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= TOTAL; i++) {
+    dotsEl.innerHTML += `<button onclick="goToSlide(${i})" class="dot w-2.5 h-2.5 rounded-full border border-[var(--border)] transition-colors" id="dot-${i}"></button>`;
+  }
+
+  function updateUI() {
+    document.querySelectorAll('.slide').forEach((s, idx) => {
+      s.classList.toggle('active', idx + 1 === current);
+    });
+    document.getElementById('slide-counter').textContent = `Folie ${current} / ${TOTAL}`;
+    document.getElementById('prev-btn').disabled = current === 1;
+    document.getElementById('next-btn').disabled = current === TOTAL;
+    document.getElementById('next-btn').textContent = current === TOTAL ? 'âœ“ Ende' : 'Weiter â†’';
+    for (let i = 1; i <= TOTAL; i++) {
+      const dot = document.getElementById(`dot-${i}`);
+      if (dot) dot.style.background = i === current ? 'var(--primary)' : 'var(--accent)';
+    }
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 1 && next <= TOTAL) { current = next; updateUI(); }
+  }
+
+  function goToSlide(n) { current = n; updateUI(); }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  updateUI();
+</script>
+</body>
+</html>
+
